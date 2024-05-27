@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public static GameManager instance;    //singleton design pattern
 
+    public Color[] colors;
+
 
 
     private void Awake()
@@ -37,7 +39,8 @@ public class GameManager : MonoBehaviourPunCallbacks
             if (playerPrefab != null)
             {
                 int randomPoint = Random.Range(-20, 20);
-                PhotonNetwork.Instantiate(playerPrefab.name, new Vector3(randomPoint, 5, randomPoint), Quaternion.identity);
+                GameObject go = PhotonNetwork.Instantiate(playerPrefab.name, new Vector3(randomPoint, 5, randomPoint), Quaternion.identity);
+                //go.transform.GetChild(1).GetComponent<Renderer>().material.color = colors[go.GetPhotonView().OwnerActorNr - 1];
                 Debug.Log("*-*-Instantiate");
             }
 

@@ -148,7 +148,7 @@ public class LaunchManager : MonoBehaviourPunCallbacks
     public void LoadGameScene()
     {
         if (PhotonNetwork.IsMasterClient)
-            PhotonNetwork.LoadLevel("GameScene");
+            PhotonNetwork.LoadLevel("TestScene");
     }
 
 

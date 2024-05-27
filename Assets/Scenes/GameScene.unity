@@ -1669,6 +1669,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 3313903846942386415, guid: 03f0c28afd8bee14680e6acf20a42c2b, type: 3}
+  colors:
+  - {r: 0.1452893, g: 1, b: 0, a: 1}
+  - {r: 1, g: 0, b: 0, a: 1}
 --- !u!4 &342645751
 Transform:
   m_ObjectHideFlags: 0
@@ -11857,6 +11860,11 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
+  treeLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  allCharacters: []
+  selectedCharacters: []
 --- !u!4 &2041985435 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4652387992457812, guid: 28f60661728ddb148a424ba31b70ccc4, type: 3}
