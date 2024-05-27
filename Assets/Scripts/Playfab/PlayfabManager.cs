@@ -31,7 +31,7 @@ public class PlayfabManager : MonoBehaviour
     {
         var request = new LoginWithCustomIDRequest
         {
-            CustomId = SystemInfo.deviceUniqueIdentifier + UnityEngine.Random.Range(1, 1000),
+            CustomId = SystemInfo.deviceUniqueIdentifier + UnityEngine.Random.Range(1, 20),
             CreateAccount = true
         };
         PlayFabClientAPI.LoginWithCustomID(request, OnLoginSuccess, OnLoginFailure);
