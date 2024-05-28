@@ -12,12 +12,22 @@ public class CharacterSelectionController : MonoBehaviour
     public List<Character> allCharacters = new List<Character>();
     public List<Character> selectedCharacters = new List<Character>();
 
+    private CameraController cameraController;
+
+    void Start()
+    {
+        cameraController = GetComponent<CameraController>();
+    }
+
     void Update()
     {
-        HandleSelection();
-        HandleMovement();
-        //PrintAgent();
-        CheckArrival();
+        if (!cameraController.IsPanning()) // Eğer kamera hareketi yapılmıyorsa seçim ve hareket işlemlerini yap
+        {
+            HandleSelection();
+            HandleMovement();
+            //PrintAgent();
+            CheckArrival();
+        }
     }
 
     void HandleSelection()
@@ -27,11 +37,8 @@ public class CharacterSelectionController : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
-
-
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, selectableLayer))
             {
-                print(hit.transform.name);
                 Character selectedObject = hit.collider.GetComponent<Character>();
                 if (!allCharacters.Contains(selectedObject)) allCharacters.Add(selectedObject);
 
@@ -46,10 +53,8 @@ public class CharacterSelectionController : MonoBehaviour
                     selectedObject.ChangeOutline(true);
                 }
             }
-
             else if (Physics.Raycast(ray, out hit, Mathf.Infinity, treeLayer))
             {
-                print(hit.transform.name);
                 StartCoroutine(hit.transform.GetComponent<Tree>().FlashOutline());
                 foreach (Character character in selectedCharacters)
                 {
@@ -63,7 +68,6 @@ public class CharacterSelectionController : MonoBehaviour
             }
             else if (Physics.Raycast(ray, out hit, Mathf.Infinity, groundLayer))
             {
-                print(hit.transform.name);
                 foreach (Character character in selectedCharacters)
                 {
                     if (character.agent != null)
@@ -74,10 +78,8 @@ public class CharacterSelectionController : MonoBehaviour
                 }
                 ClearSelectedCharacters();
             }
-
         }
     }
-
 
     public void PrintAgent()
     {

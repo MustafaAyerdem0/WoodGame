@@ -6,7 +6,7 @@ public class WalkingState : IState
 {
     public void EnterState(Character character)
     {
-        character.animator.SetTrigger("Walking");
+        character.animator.SetBool("Walking", true);
         Debug.Log("Walking trigger");
     }
 
@@ -17,7 +17,7 @@ public class WalkingState : IState
 
     public void ExitState(Character character)
     {
-        character.animator.ResetTrigger("Walking");
+        character.animator.SetBool("Walking", false);
     }
 
 

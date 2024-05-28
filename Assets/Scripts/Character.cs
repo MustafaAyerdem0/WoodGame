@@ -35,6 +35,7 @@ public class Character : MonoBehaviourPun
     private void Start()
     {
         ChangeColor();
+        if (!photonView.IsMine) gameObject.layer = 8;
     }
 
     private void Update()

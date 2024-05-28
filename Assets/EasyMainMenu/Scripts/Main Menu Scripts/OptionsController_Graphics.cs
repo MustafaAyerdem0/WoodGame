@@ -325,19 +325,19 @@ public class OptionsController_Graphics : MonoBehaviour {
 
         if (toggleTextureQuality == 0)
         {
-            QualitySettings.masterTextureLimit = 1;
+            QualitySettings.globalTextureMipmapLimit = 1;
             toggleTextureQuality_text.text = "Half";
             toggleTextureQuality = 1;
         }
         else if (toggleTextureQuality == 1)
         {
-            QualitySettings.masterTextureLimit = 2;
+            QualitySettings.globalTextureMipmapLimit = 2;
             toggleTextureQuality_text.text = "Quarter";
             toggleTextureQuality = 2;
         }
         else if (toggleTextureQuality == 2)
         {
-            QualitySettings.masterTextureLimit = 0;
+            QualitySettings.globalTextureMipmapLimit = 0;
             toggleTextureQuality_text.text = "Full";
             toggleTextureQuality = 0;
         }
@@ -361,19 +361,19 @@ public class OptionsController_Graphics : MonoBehaviour {
         //0 = full
         if (toggleTextureQuality == 0)
         {
-            QualitySettings.masterTextureLimit = 0;
+            QualitySettings.globalTextureMipmapLimit = 0;
             toggleTextureQuality_text.text = "Full";
         }
         //1 = half
         else if (toggleTextureQuality == 1)
         {
-            QualitySettings.masterTextureLimit = 1;
+            QualitySettings.globalTextureMipmapLimit = 1;
             toggleTextureQuality_text.text = "Half";
         }
         //2 = quarter
         else if (toggleTextureQuality == 2)
         {
-            QualitySettings.masterTextureLimit = 2;
+            QualitySettings.globalTextureMipmapLimit = 2;
             toggleTextureQuality_text.text = "Quarter";
         }
     }

@@ -15,6 +15,7 @@ public class CameraController : MonoBehaviour
     private Vector3 touchStart;
     private float initialPinchDistance;
     private float initialCameraHeight;
+    private bool isPanning = false; // Kamera hareketi için kullanılan bayrak
 
     void Update()
     {
@@ -31,14 +32,20 @@ public class CameraController : MonoBehaviour
             }
             else if (touch.phase == TouchPhase.Moved)
             {
+                isPanning = true; // Kamera hareketi başladığını işaretle
                 Vector3 direction = touchStart - Camera.main.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y, Camera.main.transform.position.y));
                 pos.x += direction.x * panSpeed * Time.deltaTime;
                 pos.z += direction.z * panSpeed * Time.deltaTime;
+            }
+            else if (touch.phase == TouchPhase.Ended)
+            {
+                isPanning = false; // Kamera hareketi bittiğini işaretle
             }
         }
         // İki parmakla büyütme/küçültme hareketi
         else if (Input.touchCount == 2)
         {
+            isPanning = true; // Kamera hareketi için işaretle
             Touch touchZero = Input.GetTouch(0);
             Touch touchOne = Input.GetTouch(1);
 
@@ -55,6 +62,10 @@ public class CameraController : MonoBehaviour
                 pos.y = initialCameraHeight + pinchDifference * scrollSpeed * Time.deltaTime;
                 pos.y = Mathf.Clamp(pos.y, minY, maxY);
             }
+            else if (touchZero.phase == TouchPhase.Ended || touchOne.phase == TouchPhase.Ended)
+            {
+                isPanning = false; // Kamera hareketi bittiğini işaretle
+            }
         }
         // Fare tekerleği ile yakınlaştırma/uzaklaştırma
         else if (Input.GetAxis("Mouse ScrollWheel") != 0)
@@ -62,7 +73,6 @@ public class CameraController : MonoBehaviour
             float scroll = Input.GetAxis("Mouse ScrollWheel");
             pos.y -= scroll * scrollSpeed * Time.deltaTime;
             pos.y = Mathf.Clamp(pos.y, minY, maxY);
-            print(scroll);
         }
 
         // Kenar hareketleri (mouse veya klavye)
@@ -89,6 +99,9 @@ public class CameraController : MonoBehaviour
 
         transform.position = pos;
     }
+
+    public bool IsPanning()
+    {
+        return isPanning;
+    }
 }
-
-

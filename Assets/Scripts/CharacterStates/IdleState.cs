@@ -7,7 +7,7 @@ public class IdleState : IState
 {
     public void EnterState(Character character)
     {
-        character.animator.SetTrigger("Idle");
+        character.animator.SetBool("Idle", true);
         Debug.Log("idle trigger");
     }
 
@@ -18,6 +18,6 @@ public class IdleState : IState
 
     public void ExitState(Character character)
     {
-        character.animator.ResetTrigger("Idle");
+        character.animator.SetBool("Idle", false);
     }
 }

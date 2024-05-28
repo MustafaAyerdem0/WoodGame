@@ -6,7 +6,7 @@ public class LumberingState : IState
 {
     public void EnterState(Character character)
     {
-        character.animator.SetTrigger("Lumbering");
+        character.animator.SetBool("Lumbering", true);
     }
 
     public void UpdateState(Character character)
@@ -16,7 +16,7 @@ public class LumberingState : IState
 
     public void ExitState(Character character)
     {
-        character.animator.ResetTrigger("Lumbering");
+        character.animator.SetBool("Lumbering", false);
         character.SetTreeDestinationBool(false);
     }
 }
