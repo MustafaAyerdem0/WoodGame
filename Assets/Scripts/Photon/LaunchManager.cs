@@ -81,6 +81,8 @@ public class LaunchManager : MonoBehaviourPunCallbacks
     private void OnMatchmakingTicketCreated(CreateMatchmakingTicketResult result)
     {
         Debug.Log("Matchmaking ticket created with ID: " + result.TicketId);
+        CanvasManager.instance.statusText.text = "Matchmaking ticket created with ID: " + result.TicketId + "\n"
+         + "Looking for an online player to matchmaking";
         StartCoroutine(PollMatchmakingTicket(result.TicketId));
     }
 
@@ -100,6 +102,7 @@ public class LaunchManager : MonoBehaviourPunCallbacks
                 if (result.Status == "Matched")
                 {
                     Debug.Log("Match found!");
+                    CanvasManager.instance.statusText.text = "Match found!";
                     string matchId = result.MatchId; // Eşleşen match ID'sini alın
                     PhotonNetwork.ConnectUsingSettings();
                     PhotonNetwork.NickName = PlayFabSettings.staticPlayer.EntityId;
@@ -110,13 +113,15 @@ public class LaunchManager : MonoBehaviourPunCallbacks
                 }
             }, OnPlayFabError);
 
-            yield return new WaitForSeconds(5);
+            yield return new WaitForSeconds(7);
         }
     }
 
     private void OnPlayFabError(PlayFabError error)
     {
         Debug.LogError("PlayFab error: " + error.GenerateErrorReport());
+        CanvasManager.instance.statusText.text = "PlayFab error: " + error.GenerateErrorReport();
+
     }
 
     private IEnumerator JoinPhotonRoom(string roomName)
@@ -135,6 +140,7 @@ public class LaunchManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log("Joined room: " + PhotonNetwork.CurrentRoom.Name);
+        CanvasManager.instance.statusText.text = "Joined room: " + PhotonNetwork.CurrentRoom.Name;
         Invoke(nameof(LoadGameScene), 5);
         // Odaya katıldığınızda yapılacak işlemler
     }
@@ -159,6 +165,7 @@ public class LaunchManager : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         Debug.Log(PhotonNetwork.NickName + " Connected to Photon Server");
+        CanvasManager.instance.statusText.text = PhotonNetwork.NickName + " Connected to Photon Server";
         //CanvasManager.instance.LobbyPanel.SetActive(true);
         CanvasManager.instance.ConnectionStatusPanel.SetActive(false);
         CanvasManager.instance.EnterNamePanel.SetActive(false);
@@ -168,6 +175,7 @@ public class LaunchManager : MonoBehaviourPunCallbacks
     public override void OnConnected()
     {
         Debug.Log("Connected to Internet!");
+        CanvasManager.instance.statusText.text = "Connected to Internet!";
     }
 
     //call this method if the user failed to join a random room
@@ -175,7 +183,12 @@ public class LaunchManager : MonoBehaviourPunCallbacks
     {
         base.OnJoinRandomFailed(returnCode, message);
         Debug.Log(message);
-        CreateAndJoinRoom();
+        CanvasManager.instance.statusText.text = message;
+    }
+
+    public override void OnCreatedRoom()
+    {
+        base.OnCreatedRoom();
     }
 
     // public override void OnJoinedRoom()
@@ -189,25 +202,10 @@ public class LaunchManager : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         Debug.Log(newPlayer.NickName + " joined to " + PhotonNetwork.CurrentRoom.Name + " " + PhotonNetwork.CurrentRoom.PlayerCount);
+        CanvasManager.instance.statusText.text = newPlayer.NickName + " joined to " + PhotonNetwork.CurrentRoom.Name + " " + PhotonNetwork.CurrentRoom.PlayerCount;
     }
     #endregion
 
 
 
-
-    #region Private methods
-
-    void CreateAndJoinRoom()
-    {
-        string randomRoomName = "Room" + Random.Range(0, 10000);
-
-        RoomOptions roomOptions = new RoomOptions();
-        roomOptions.IsOpen = true;
-        roomOptions.IsVisible = true;
-        roomOptions.MaxPlayers = 20;
-
-        PhotonNetwork.CreateRoom(randomRoomName, roomOptions);
-    }
-
-    #endregion
 }
