@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
+using System.Collections;
 
 public class CharacterSelectionController : MonoBehaviour
 {
@@ -49,6 +50,7 @@ public class CharacterSelectionController : MonoBehaviour
             else if (Physics.Raycast(ray, out hit, Mathf.Infinity, treeLayer))
             {
                 print(hit.transform.name);
+                StartCoroutine(hit.transform.GetComponent<Tree>().FlashOutline());
                 foreach (Character character in selectedCharacters)
                 {
                     if (character.agent != null)
@@ -75,6 +77,7 @@ public class CharacterSelectionController : MonoBehaviour
 
         }
     }
+
 
     public void PrintAgent()
     {

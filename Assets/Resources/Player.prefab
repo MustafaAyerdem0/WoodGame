@@ -1280,7 +1280,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outlineMode: 0
   outlineColor: {r: 0.018116832, g: 1, b: 0, a: 1}
-  outlineWidth: 5
+  outlineWidth: 7
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
@@ -1300,16 +1300,16 @@ MonoBehaviour:
   ShowParameterInspector: 1
   m_SynchronizeParameters:
   - Type: 9
-    SynchronizeType: 0
+    SynchronizeType: 2
     Name: Idle
   - Type: 9
-    SynchronizeType: 0
+    SynchronizeType: 2
     Name: Walking
   - Type: 9
-    SynchronizeType: 0
+    SynchronizeType: 2
     Name: Lumbering
   m_SynchronizeLayers:
-  - SynchronizeType: 0
+  - SynchronizeType: 2
     LayerIndex: 0
 --- !u!1 &3330746935860317108
 GameObject:

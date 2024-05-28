@@ -40,6 +40,7 @@ MonoBehaviour:
   - Fire
   - RespawnSpaceship
   - RPC_CutTree
+  - RPC_ChangeColor
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

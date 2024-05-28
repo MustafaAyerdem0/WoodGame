@@ -12,11 +12,22 @@ public class Tree : MonoBehaviourPun
 
     BoxCollider boxColl;
 
+    Outline outline;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         boxColl = GetComponent<BoxCollider>();
+        outline = GetComponent<Outline>();
     }
+
+    public IEnumerator FlashOutline()
+    {
+        outline.enabled = true;
+        yield return new WaitForSeconds(0.05f);
+        outline.enabled = false;
+    }
+
     public void CutTree()
     {
         photonView.RPC("RPC_CutTree", RpcTarget.All);

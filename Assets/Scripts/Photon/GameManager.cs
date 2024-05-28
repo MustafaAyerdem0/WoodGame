@@ -4,6 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.SceneManagement;
+using Unity.Burst.Intrinsics;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
@@ -12,15 +13,15 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public static GameManager instance;    //singleton design pattern
 
-    public Color[] colors;
+    public List<Color> colors = new List<Color>();
 
-
+    public List<Character> characters = new List<Character>();
 
     private void Awake()
     {
         if (instance != null)
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
         else
         {
@@ -38,14 +39,24 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             if (playerPrefab != null)
             {
-                int randomPoint = Random.Range(-20, 20);
-                GameObject go = PhotonNetwork.Instantiate(playerPrefab.name, new Vector3(randomPoint, 5, randomPoint), Quaternion.identity);
-                //go.transform.GetChild(1).GetComponent<Renderer>().material.color = colors[go.GetPhotonView().OwnerActorNr - 1];
-                Debug.Log("*-*-Instantiate");
+                CreateCharacters();
             }
 
         }
     }
+
+    private void CreateCharacters()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            GameObject go = PhotonNetwork.Instantiate(playerPrefab.name, Vector3.zero, Quaternion.identity);
+            go.transform.position = new Vector3(i + ((go.GetPhotonView().OwnerActorNr - 1) * 10), 0, 0);
+            characters.Add(go.GetComponent<Character>());
+        }
+
+    }
+
+
 
     public override void OnJoinedRoom()
     {

@@ -1672,6 +1672,7 @@ MonoBehaviour:
   colors:
   - {r: 0.1452893, g: 1, b: 0, a: 1}
   - {r: 1, g: 0, b: 0, a: 1}
+  asd: 42
 --- !u!4 &342645751
 Transform:
   m_ObjectHideFlags: 0
@@ -11862,7 +11863,7 @@ MonoBehaviour:
     m_Bits: 8
   treeLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   allCharacters: []
   selectedCharacters: []
 --- !u!4 &2041985435 stripped

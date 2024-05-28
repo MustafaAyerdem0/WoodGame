@@ -5,7 +5,7 @@ using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Character : MonoBehaviour
+public class Character : MonoBehaviourPun
 {
 
     GameObject targetTree;
@@ -30,6 +30,11 @@ public class Character : MonoBehaviour
         animator = GetComponent<Animator>();
         currentState = new IdleState();
         currentState.EnterState(this);
+    }
+
+    private void Start()
+    {
+        ChangeColor();
     }
 
     private void Update()
@@ -69,5 +74,16 @@ public class Character : MonoBehaviour
     public bool IsTreeDestinationSet()
     {
         return treeDestinationSet;
+    }
+
+    public void ChangeColor()
+    {
+        photonView.RPC("RPC_ChangeColor", RpcTarget.All);
+    }
+
+    [PunRPC]
+    void RPC_ChangeColor()
+    {
+        transform.GetChild(1).GetComponent<Renderer>().material.color = GameManager.instance.colors[gameObject.GetPhotonView().OwnerActorNr - 1];
     }
 }
