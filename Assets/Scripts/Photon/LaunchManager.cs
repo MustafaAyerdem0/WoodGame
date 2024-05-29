@@ -147,8 +147,15 @@ public class LaunchManager : MonoBehaviourPunCallbacks
     public void PrepareMatchmakingScreen()
     {
         CanvasManager.instance.MatchmakingPanel.SetActive(true);
-        CanvasManager.instance.player1Name.text = PhotonNetwork.CurrentRoom.Players[0].NickName;
-        CanvasManager.instance.player2Name.text = PhotonNetwork.CurrentRoom.Players[1].NickName;
+        int i = 0;
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            if (i == 0) CanvasManager.instance.player1Name.text = player.NickName;
+            if (i == 1) CanvasManager.instance.player2Name.text = PhotonNetwork.CurrentRoom.Players[2].NickName;
+            i++;
+        }
+
+
     }
 
     public void LoadGameScene()
