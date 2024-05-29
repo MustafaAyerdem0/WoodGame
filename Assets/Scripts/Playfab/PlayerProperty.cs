@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerProperty : DBSyncSynchronizer
 {
     [SyncWithDatabase]
-    public string collectedWoodCount;
+    public int collectedWoodCount;
 
     public override void AddDBKeys()
     {

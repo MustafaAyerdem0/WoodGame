@@ -6,12 +6,17 @@ using UnityEngine;
 using Newtonsoft.Json;
 using System.Reflection;
 using System;
+using TMPro;
 
 public class PlayfabManager : MonoBehaviour
 {
     public static PlayfabManager instance;
     public static Action dbSyncAction;
+    public static Action onDataReceivedAction;
     public Dictionary<string, DBSyncSynchronizer> dbKeys = new Dictionary<string, DBSyncSynchronizer>();
+    public static string displayName;
+
+    public PlayerProperty playerProperty;
 
 
     private void Awake()
@@ -25,35 +30,83 @@ public class PlayfabManager : MonoBehaviour
         {
             Destroy(this);
         }
+
+
+        playerProperty = FindObjectOfType<PlayerProperty>();
     }
 
-    public void Start()
+    public void Register()
     {
-        var request = new LoginWithCustomIDRequest
+        var request = new RegisterPlayFabUserRequest
         {
-            CustomId = SystemInfo.deviceUniqueIdentifier + UnityEngine.Random.Range(1, 20),
-            CreateAccount = true
+            Email = CanvasManager.instance.R_mailText.text,
+            DisplayName = CanvasManager.instance.R_playerNameText.text,
+            Password = CanvasManager.instance.R_passwordText.text,
+            RequireBothUsernameAndEmail = false
         };
-        PlayFabClientAPI.LoginWithCustomID(request, OnLoginSuccess, OnLoginFailure);
+
+        PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnError);
+    }
+
+    public void Login()
+    {
+        var request = new LoginWithEmailAddressRequest
+        {
+            Email = CanvasManager.instance.L_mailText.text,
+            Password = CanvasManager.instance.L_passwordText.text
+        };
+
+        PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnError);
+
+        CanvasManager.instance.ConnectionStatusPanel.SetActive(true);
+    }
+
+    private void GetPlayerProfile()
+    {
+        var request = new GetPlayerProfileRequest();
+
+        PlayFabClientAPI.GetPlayerProfile(request, OnGetPlayerProfileSuccess, OnGetPlayerProfileFailure);
+    }
+
+    private void OnGetPlayerProfileSuccess(GetPlayerProfileResult result)
+    {
+        displayName = result.PlayerProfile.DisplayName;
+        CanvasManager.instance.playerDisplayName.text = displayName;
+        CanvasManager.instance.playerNamePanel.SetActive(true);
+        CanvasManager.instance.WoodPanel.SetActive(true);
+        LaunchManager.instance.SetDisplayName(displayName);
+    }
+
+    private void OnGetPlayerProfileFailure(PlayFabError error)
+    {
+        Debug.LogError("Failed to get player profile: " + error.GenerateErrorReport());
     }
 
     private void OnLoginSuccess(LoginResult result)
     {
         Debug.Log("Login Success");
+        CanvasManager.instance.statusText.text = "Login Success!";
+        GetPlayerProfile();
         dbSyncAction?.Invoke();
         GetAllData();
-
     }
 
-    private void OnLoginFailure(PlayFabError error)
+    private void OnRegisterSuccess(RegisterPlayFabUserResult result)
     {
-        Debug.LogError("LoginFailure: " + error.GenerateErrorReport());
+        Debug.Log("Register Successful");
+        CanvasManager.instance.statusText.text = "Register Successful!";
+        // Kayıt başarılı olduğunda yapılacak işlemler
+    }
+
+    private void OnError(PlayFabError error)
+    {
+        Debug.LogError("Failure: " + error.ErrorMessage);
+        CanvasManager.instance.statusText.text = "Failure: " + error.GenerateErrorReport();
+        // Hata durumunda yapılacak işlemler
     }
 
     public void SaveData(string key)
     {
-
-
         var data = new Dictionary<string, string>();
         var fields = dbKeys[key].GetType().GetFields(BindingFlags.Public | BindingFlags.Instance);
         var jsonData = new Dictionary<string, string>();
@@ -119,6 +172,8 @@ public class PlayfabManager : MonoBehaviour
                 }
             }
         }
+
+        onDataReceivedAction?.Invoke();
     }
 
     void OnDataSend(UpdateUserDataResult result)
@@ -126,8 +181,5 @@ public class PlayfabManager : MonoBehaviour
         Debug.Log(result);
     }
 
-    void OnError(PlayFabError error)
-    {
-        Debug.LogError(error.GenerateErrorReport());
-    }
+
 }
