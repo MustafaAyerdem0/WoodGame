@@ -21,16 +21,16 @@ public class PlayfabManager : MonoBehaviour
 
     private void Awake()
     {
+        if (instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
-        if (instance == null)
+        else
         {
             instance = this;
         }
-        else
-        {
-            Destroy(this);
-        }
-
 
         playerProperty = FindObjectOfType<PlayerProperty>();
     }
@@ -71,10 +71,8 @@ public class PlayfabManager : MonoBehaviour
     private void OnGetPlayerProfileSuccess(GetPlayerProfileResult result)
     {
         displayName = result.PlayerProfile.DisplayName;
-        CanvasManager.instance.playerDisplayName.text = displayName;
-        CanvasManager.instance.playerNamePanel.SetActive(true);
-        CanvasManager.instance.WoodPanel.SetActive(true);
         LaunchManager.instance.SetDisplayName(displayName);
+        CanvasManager.instance.OpenProfilePanel();
     }
 
     private void OnGetPlayerProfileFailure(PlayFabError error)

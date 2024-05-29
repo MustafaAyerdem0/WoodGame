@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
+using PlayFab;
 using TMPro;
 using Unity.VisualScripting.AssemblyQualifiedNameParser;
 using UnityEngine;
 
 public class CanvasManager : MonoBehaviour
 {
-    public GameObject EnterNamePanel;
+    public GameObject AuthPanel;
     public GameObject ConnectionStatusPanel;
     public GameObject LobbyPanel;
     public static CanvasManager instance;
@@ -28,6 +30,8 @@ public class CanvasManager : MonoBehaviour
     public TMP_Text player1Name;
     public TMP_Text player2Name;
 
+    public GameObject startMatchmakingButton, cancelMatcmakingButton;
+
     private void Awake()
     {
         if (instance != null) Destroy(gameObject);
@@ -48,22 +52,43 @@ public class CanvasManager : MonoBehaviour
 
     void Start()
     {
-        EnterNamePanel.SetActive(true);
-        ConnectionStatusPanel.SetActive(false);
-        //LobbyPanel.SetActive(false);
+        if (!PlayFabClientAPI.IsClientLoggedIn()) AuthPanel.SetActive(true);
+        else OpenProfilePanel();
 
+        ConnectionStatusPanel.SetActive(false);
         Cursor.lockState = CursorLockMode.None;
+    }
+
+    public void CreateMatchmakingTicket()
+    {
+        LaunchManager.instance.CreateMatchmakingTicket();
+        cancelMatcmakingButton.SetActive(true);
+        startMatchmakingButton.SetActive(false);
+    }
+
+    public void CancelMatchmakingTicket()
+    {
+        LaunchManager.instance.CreateMatchmakingTicket();
+        cancelMatcmakingButton.SetActive(false);
+        startMatchmakingButton.SetActive(true);
     }
 
     public void CloseAuthPanel()
     {
         ConnectionStatusPanel.SetActive(false);
-        EnterNamePanel.SetActive(false);
+        AuthPanel.SetActive(false);
     }
 
     public void UpdateCollectedWoodText()
     {
         playerWoodCount.text = PlayfabManager.instance.playerProperty.collectedWoodCount.ToString();
+    }
+
+    public void OpenProfilePanel()
+    {
+        playerDisplayName.text = PlayfabManager.displayName;
+        playerNamePanel.SetActive(true);
+        WoodPanel.SetActive(true);
     }
 
 }

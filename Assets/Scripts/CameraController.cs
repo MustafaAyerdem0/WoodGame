@@ -11,6 +11,7 @@ public class CameraController : MonoBehaviour
     public float scrollSpeed = 20f; // Yakınlaştırma/Uzaklaştırma hızı
     public float minY = 20f; // Minimum yakınlaştırma
     public float maxY = 120f; // Maksimum uzaklaştırma
+    public float smoothSpeed = 5f;
 
     private Vector3 touchStart;
     private float initialPinchDistance;
@@ -59,8 +60,11 @@ public class CameraController : MonoBehaviour
                 float currentPinchDistance = Vector2.Distance(touchZero.position, touchOne.position);
                 float pinchDifference = initialPinchDistance - currentPinchDistance;
 
-                pos.y = initialCameraHeight + pinchDifference * scrollSpeed * Time.deltaTime;
-                pos.y = Mathf.Clamp(pos.y, minY, maxY);
+                float targetHeight = initialCameraHeight + pinchDifference * scrollSpeed * Time.deltaTime;
+                targetHeight = Mathf.Clamp(targetHeight, minY, maxY);
+
+                // Yumuşatılmış kamera hareketi
+                pos.y = Mathf.Lerp(pos.y, targetHeight, smoothSpeed * Time.deltaTime);
             }
             else if (touchZero.phase == TouchPhase.Ended || touchOne.phase == TouchPhase.Ended)
             {

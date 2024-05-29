@@ -5,25 +5,35 @@ using Photon.Pun;
 using Photon.Realtime;
 using PlayFab;
 using PlayFab.MultiplayerModels;
-using Unity.VisualScripting;
+using UnityEngine.SceneManagement;
 
 public class LaunchManager : MonoBehaviourPunCallbacks
 {
-
     public static LaunchManager instance;
+    string currentTicketId;
+    [SerializeField]
+    public Coroutine matchmakingCoroutine;
+    [SerializeField]
+    Coroutine checkCoroutine;
+    [SerializeField]
+    Coroutine timeoutCoroutine;
 
     #region Unity Methods
 
-    //first method that is executed
     private void Awake()
     {
+        if (instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        else
+        {
+
+            instance = this;
+        }
+
         DontDestroyOnLoad(gameObject);
-
-        if (instance != null) Destroy(gameObject);
-        else instance = this;
-
-
-
         PhotonNetwork.AutomaticallySyncScene = true;
     }
 
@@ -32,10 +42,29 @@ public class LaunchManager : MonoBehaviourPunCallbacks
         ConnectToPhotonServer();
     }
 
+    private void OnDestroy()
+    {
+        // Stop all coroutines if the object is being destroyed
+        if (matchmakingCoroutine != null)
+        {
+            StopCoroutine(matchmakingCoroutine);
+            matchmakingCoroutine = null;
+        }
+        if (checkCoroutine != null)
+        {
+            StopCoroutine(checkCoroutine);
+            checkCoroutine = null;
+        }
+        if (timeoutCoroutine != null)
+        {
+            StopCoroutine(timeoutCoroutine);
+            timeoutCoroutine = null;
+        }
+    }
+
     #endregion
 
-
-    #region  Public Methods
+    #region Public Methods
 
     public void ConnectToPhotonServer()
     {
@@ -44,11 +73,6 @@ public class LaunchManager : MonoBehaviourPunCallbacks
             PhotonNetwork.ConnectUsingSettings();
         }
     }
-
-    #endregion
-
-
-
 
     public void CreateMatchmakingTicket()
     {
@@ -63,7 +87,7 @@ public class LaunchManager : MonoBehaviourPunCallbacks
                 }
             },
             QueueName = "WoodCollectionMatchmakingQueue",
-            GiveUpAfterSeconds = 60
+            GiveUpAfterSeconds = 22
         };
 
         PlayFabMultiplayerAPI.CreateMatchmakingTicket(request, OnMatchmakingTicketCreated, OnPlayFabError);
@@ -71,10 +95,14 @@ public class LaunchManager : MonoBehaviourPunCallbacks
 
     private void OnMatchmakingTicketCreated(CreateMatchmakingTicketResult result)
     {
+        if (checkCoroutine != null) StopCoroutine(checkCoroutine);
+        checkCoroutine = null;
+        currentTicketId = result.TicketId;
         Debug.Log("Matchmaking ticket created with ID: " + result.TicketId);
-        CanvasManager.instance.statusText.text = "Matchmaking ticket created with ID: " + result.TicketId + "\n"
-         + "Looking for an online player to matchmaking";
-        StartCoroutine(PollMatchmakingTicket(result.TicketId));
+        CanvasManager.instance.statusText.text = "Matchmaking ticket created" + "\nLooking for an online player to matchmaking";
+        print(timeoutCoroutine);
+        timeoutCoroutine = StartCoroutine(MatchmakingTimeoutCoroutine(22));
+        matchmakingCoroutine = StartCoroutine(PollMatchmakingTicket(currentTicketId));
     }
 
     private IEnumerator PollMatchmakingTicket(string ticketId)
@@ -82,6 +110,7 @@ public class LaunchManager : MonoBehaviourPunCallbacks
         bool loop = true;
         while (loop)
         {
+            print("calisiyor");
             var request = new GetMatchmakingTicketRequest
             {
                 TicketId = ticketId,
@@ -94,25 +123,76 @@ public class LaunchManager : MonoBehaviourPunCallbacks
                 {
                     Debug.Log("Match found!");
                     CanvasManager.instance.statusText.text = "Match found!";
-                    string matchId = result.MatchId; // Eşleşen match ID'sini alın
+                    string matchId = result.MatchId;
                     PhotonNetwork.ConnectUsingSettings();
-                    //PhotonNetwork.NickName = PlayFabSettings.staticPlayer.EntityId;
                     PhotonNetwork.GameVersion = "1";
-                    StartCoroutine(JoinPhotonRoom(matchId));
                     loop = false;
+                    if (timeoutCoroutine != null)
+                    {
+                        StopCoroutine(timeoutCoroutine);
+                        timeoutCoroutine = null;
+                    }
 
+                    if (matchmakingCoroutine != null)
+                    {
+                        StopCoroutine(matchmakingCoroutine);
+                        matchmakingCoroutine = null;
+                    }
+
+                    StartCoroutine(JoinPhotonRoom(matchId));
                 }
             }, OnPlayFabError);
 
-            yield return new WaitForSeconds(7);
+            yield return new WaitForSeconds(3);
         }
+    }
+
+    private IEnumerator MatchmakingTimeoutCoroutine(float timeout)
+    {
+        yield return new WaitForSeconds(timeout - 0.1f);
+        print("durdu");
+        StopCoroutine(matchmakingCoroutine);
+        matchmakingCoroutine = null;
+        checkCoroutine = StartCoroutine(CheckTicket());
+    }
+
+    IEnumerator CheckTicket()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1);
+            GetMatchmakingTicket(currentTicketId);
+        }
+    }
+
+    void GetMatchmakingTicket(string ticketId)
+    {
+        var request = new GetMatchmakingTicketRequest
+        {
+            TicketId = ticketId,
+            QueueName = "WoodCollectionMatchmakingQueue"
+        };
+
+        PlayFabMultiplayerAPI.GetMatchmakingTicket(request, result =>
+        {
+            // Ticket'ın durumu "Canceled" ise
+            if (result.Status == "Canceled")
+            {
+                Debug.Log("Matchmaking ticket canceled. Starting new matchmaking...");
+                // Yeni matchmaking işlemini başlat
+                CreateMatchmakingTicket();
+            }
+            else
+            {
+                Debug.Log("Matchmaking ticket status: " + result.Status);
+            }
+        }, OnPlayFabError);
     }
 
     private void OnPlayFabError(PlayFabError error)
     {
         Debug.LogError("PlayFab error: " + error.GenerateErrorReport());
         CanvasManager.instance.statusText.text = "PlayFab error: " + error.GenerateErrorReport();
-
     }
 
     private IEnumerator JoinPhotonRoom(string roomName)
@@ -133,15 +213,17 @@ public class LaunchManager : MonoBehaviourPunCallbacks
         Debug.Log("Joined room: " + PhotonNetwork.CurrentRoom.Name);
         Debug.Log("Joined to " + PhotonNetwork.MasterClient.NickName + "'s room");
         CanvasManager.instance.statusText.text = "Joined to " + PhotonNetwork.MasterClient.NickName + "'s room";
-        Invoke(nameof(PrepareMatchmakingScreen), 1);
-        Invoke(nameof(LoadGameScene), 5);
-        // Odaya katıldığınızda yapılacak işlemler
+        StartCoroutine(LoadGameScene());
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
         Debug.LogWarning("Failed to join room: " + message);
-        // Odaya katılma başarısız olursa yapılacak işlemler
+    }
+
+    public void LeaveRoom()
+    {
+        PhotonNetwork.LeaveRoom(); // Oyuncuyu Photon odasından çıkar
     }
 
     public void PrepareMatchmakingScreen()
@@ -154,33 +236,39 @@ public class LaunchManager : MonoBehaviourPunCallbacks
             if (i == 1) CanvasManager.instance.player2Name.text = PhotonNetwork.CurrentRoom.Players[2].NickName;
             i++;
         }
-
-
     }
 
-    public void LoadGameScene()
+    public IEnumerator LoadGameScene()
     {
-        if (PhotonNetwork.IsMasterClient)
-            PhotonNetwork.LoadLevel("TestScene");
+        while (true)
+        {
+            if (PhotonNetwork.CurrentRoom.PlayerCount > 1)
+            {
+                yield return new WaitForSeconds(1);
+                PrepareMatchmakingScreen();
+                yield return new WaitForSeconds(2);
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    PhotonNetwork.LoadLevel("TestScene");
+                }
+                break;
+            }
+            yield return new WaitForSeconds(1);
+        }
+
     }
 
-
+    #endregion
 
     #region Photon Callbacks
 
-    //this method calls when we connected to  photon servers.
-    public override void OnConnectedToMaster()
-    {
+    public override void OnConnectedToMaster() { }
 
-    }
-
-    //this method will call when we have the internet connection or before onConnectedToMaster method
     public override void OnConnected()
     {
         Debug.Log("Connected to Internet!");
     }
 
-    //call this method if the user failed to join a random room
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
         base.OnJoinRandomFailed(returnCode, message);
@@ -198,21 +286,19 @@ public class LaunchManager : MonoBehaviourPunCallbacks
         base.OnCreatedRoom();
     }
 
-    // public override void OnJoinedRoom()
-    // {
-    //     //who joines to which room, we will see
-    //     Debug.Log(PhotonNetwork.NickName + " joined to " + PhotonNetwork.CurrentRoom.Name);
-    //     PhotonNetwork.LoadLevel("GameScene");
-    // }
-
-    //it is called when a remote player joins the room that we are in.
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         Debug.Log(newPlayer.NickName + " joined to " + PhotonNetwork.CurrentRoom.Name + " " + PhotonNetwork.CurrentRoom.PlayerCount);
         CanvasManager.instance.statusText.text = newPlayer.NickName + " joined to room";
     }
+
+    public override void OnLeftRoom()
+    {
+        Debug.Log("Left room successfully");
+        //if (SceneManager.GetActiveScene().name != "LaunchScene") SceneManager.LoadScene("LaunchScene");
+    }
+
+
+
     #endregion
-
-
-
 }

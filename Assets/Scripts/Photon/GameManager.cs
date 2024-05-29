@@ -72,12 +72,16 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public override void OnLeftRoom()
     {
-        SceneManager.LoadScene("GameLauncherScene");
+        SceneManager.LoadScene("LaunchScene");
     }
-
 
     public void LeaveRoom()
     {
         PhotonNetwork.LeaveRoom();
+    }
+
+    public void QuitMatch()
+    {
+        Application.Quit();
     }
 }
