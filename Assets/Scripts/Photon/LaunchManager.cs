@@ -6,6 +6,7 @@ using Photon.Realtime;
 using PlayFab;
 using PlayFab.MultiplayerModels;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class LaunchManager : MonoBehaviourPunCallbacks
 {
@@ -17,6 +18,8 @@ public class LaunchManager : MonoBehaviourPunCallbacks
     Coroutine checkCoroutine;
     [SerializeField]
     Coroutine timeoutCoroutine;
+    float timer;
+    bool isMatchmaking;
 
     #region Unity Methods
 
@@ -42,23 +45,12 @@ public class LaunchManager : MonoBehaviourPunCallbacks
         ConnectToPhotonServer();
     }
 
-    private void OnDestroy()
+    private void Update()
     {
-        // Stop all coroutines if the object is being destroyed
-        if (matchmakingCoroutine != null)
+        if (isMatchmaking)
         {
-            StopCoroutine(matchmakingCoroutine);
-            matchmakingCoroutine = null;
-        }
-        if (checkCoroutine != null)
-        {
-            StopCoroutine(checkCoroutine);
-            checkCoroutine = null;
-        }
-        if (timeoutCoroutine != null)
-        {
-            StopCoroutine(timeoutCoroutine);
-            timeoutCoroutine = null;
+            timer += Time.deltaTime;
+            CanvasManager.instance.matchmakingTimer.text = "Searching : " + ((int)timer).ToString();
         }
     }
 
@@ -76,6 +68,7 @@ public class LaunchManager : MonoBehaviourPunCallbacks
 
     public void CreateMatchmakingTicket()
     {
+        isMatchmaking = true;
         var request = new CreateMatchmakingTicketRequest
         {
             Creator = new MatchmakingPlayer
@@ -121,8 +114,10 @@ public class LaunchManager : MonoBehaviourPunCallbacks
             {
                 if (result.Status == "Matched")
                 {
+                    CanvasManager.instance.cancelMatcmakingButton.GetComponent<Button>().interactable = false;
                     Debug.Log("Match found!");
                     CanvasManager.instance.statusText.text = "Match found!";
+                    isMatchmaking = false;
                     string matchId = result.MatchId;
                     PhotonNetwork.ConnectUsingSettings();
                     PhotonNetwork.GameVersion = "1";
@@ -132,14 +127,13 @@ public class LaunchManager : MonoBehaviourPunCallbacks
                         StopCoroutine(timeoutCoroutine);
                         timeoutCoroutine = null;
                     }
+                    StartCoroutine(JoinPhotonRoom(matchId));
 
                     if (matchmakingCoroutine != null)
                     {
                         StopCoroutine(matchmakingCoroutine);
                         matchmakingCoroutine = null;
                     }
-
-                    StartCoroutine(JoinPhotonRoom(matchId));
                 }
             }, OnPlayFabError);
 
@@ -195,6 +189,36 @@ public class LaunchManager : MonoBehaviourPunCallbacks
         CanvasManager.instance.statusText.text = "PlayFab error: " + error.GenerateErrorReport();
     }
 
+    public void CancelMatchmakingTicket()
+    {
+        if (!string.IsNullOrEmpty(currentTicketId))
+        {
+            var request = new CancelMatchmakingTicketRequest
+            {
+                TicketId = currentTicketId,
+                QueueName = "WoodCollectionMatchmakingQueue"
+            };
+
+            PlayFabMultiplayerAPI.CancelMatchmakingTicket(request, OnCancelMatchmakingTicketSuccess, OnPlayFabError);
+        }
+        else
+        {
+            Debug.LogWarning("No active matchmaking ticket to cancel.");
+        }
+    }
+
+    private void OnCancelMatchmakingTicketSuccess(CancelMatchmakingTicketResult result)
+    {
+        StopAllCoroutines();
+
+        Debug.Log("Matchmaking ticket canceled successfully: " + currentTicketId);
+        currentTicketId = null;
+        CanvasManager.instance.statusText.text = "Matchmaking ticket canceled successfully.";
+        isMatchmaking = false;
+        timer = 0;
+    }
+
+
     private IEnumerator JoinPhotonRoom(string roomName)
     {
         while (!PhotonNetwork.IsConnectedAndReady)
@@ -229,6 +253,7 @@ public class LaunchManager : MonoBehaviourPunCallbacks
     public void PrepareMatchmakingScreen()
     {
         CanvasManager.instance.MatchmakingPanel.SetActive(true);
+        timer = 0;
         int i = 0;
         foreach (Player player in PhotonNetwork.PlayerList)
         {
@@ -257,6 +282,30 @@ public class LaunchManager : MonoBehaviourPunCallbacks
         }
 
     }
+
+    private void StopCoroutines()
+    {
+
+        // Stop all coroutines if the object is being destroyed
+        if (matchmakingCoroutine != null)
+        {
+            StopCoroutine(matchmakingCoroutine);
+            matchmakingCoroutine = null;
+        }
+        if (checkCoroutine != null)
+        {
+            StopCoroutine(checkCoroutine);
+            checkCoroutine = null;
+        }
+        if (timeoutCoroutine != null)
+        {
+            StopCoroutine(timeoutCoroutine);
+            timeoutCoroutine = null;
+        }
+
+    }
+
+
 
     #endregion
 

@@ -10,7 +10,6 @@ public class CanvasManager : MonoBehaviour
 {
     public GameObject AuthPanel;
     public GameObject ConnectionStatusPanel;
-    public GameObject LobbyPanel;
     public static CanvasManager instance;
 
     [SerializeField] public TMP_Text L_mailText;
@@ -31,6 +30,9 @@ public class CanvasManager : MonoBehaviour
     public TMP_Text player2Name;
 
     public GameObject startMatchmakingButton, cancelMatcmakingButton;
+    public TMP_Text matchmakingTimer;
+
+
 
     private void Awake()
     {
@@ -62,13 +64,15 @@ public class CanvasManager : MonoBehaviour
     public void CreateMatchmakingTicket()
     {
         LaunchManager.instance.CreateMatchmakingTicket();
+        matchmakingTimer.gameObject.SetActive(true);
         cancelMatcmakingButton.SetActive(true);
         startMatchmakingButton.SetActive(false);
     }
 
     public void CancelMatchmakingTicket()
     {
-        LaunchManager.instance.CreateMatchmakingTicket();
+        LaunchManager.instance.CancelMatchmakingTicket();
+        matchmakingTimer.gameObject.SetActive(false);
         cancelMatcmakingButton.SetActive(false);
         startMatchmakingButton.SetActive(true);
     }
