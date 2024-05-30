@@ -7,6 +7,13 @@
       "dependencies": {},
       "hash": "06c20cafa885cbb9f14791c269cda6b547e0be30"
     },
+    "com.nopnag.codecombiner": {
+      "version": "https://github.com/cihanozcelik/CodeCombiner.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "73fd8999602fc85568a747636fbfb46bbb00f512"
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,

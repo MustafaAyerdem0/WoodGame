@@ -13,10 +13,13 @@ public class PlayfabManager : MonoBehaviour
     public static PlayfabManager instance;
     public static Action dbSyncAction;
     public static Action onDataReceivedAction;
+    public static Action onLoginSuccessAction;
     public Dictionary<string, DBSyncSynchronizer> dbKeys = new Dictionary<string, DBSyncSynchronizer>();
     public static string displayName;
 
     public PlayerProperty playerProperty;
+
+
 
 
     private void Awake()
@@ -58,7 +61,7 @@ public class PlayfabManager : MonoBehaviour
 
         PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnError);
 
-        CanvasManager.instance.ConnectionStatusPanel.SetActive(true);
+        CanvasManager.instance.LoadingBar.SetActive(true);
     }
 
     private void GetPlayerProfile()
@@ -82,6 +85,7 @@ public class PlayfabManager : MonoBehaviour
 
     private void OnLoginSuccess(LoginResult result)
     {
+        onLoginSuccessAction?.Invoke();
         Debug.Log("Login Success");
         CanvasManager.instance.statusText.text = "Login Success!";
         GetPlayerProfile();

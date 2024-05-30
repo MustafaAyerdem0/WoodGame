@@ -4,19 +4,20 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    public float panSpeed = 20f; // Kamera kaydırma hızı
-    public float panBorderThickness = 10f; // Kenar boşluğu kalınlığı
-    public Vector3 panLimit; // Kaydırma sınırları
-
-    public float scrollSpeed = 20f; // Yakınlaştırma/Uzaklaştırma hızı
-    public float minY = 20f; // Minimum yakınlaştırma
-    public float maxY = 120f; // Maksimum uzaklaştırma
-    public float smoothSpeed = 5f;
+    [Header("Camera Control Settings")]
+    [Tooltip("There are values ​​for both mobile and pc.")]
+    [SerializeField] public float panSpeed = 20f;
+    [SerializeField] public float panBorderThickness = 10f;
+    [SerializeField] public Vector3 panLimit;
+    [SerializeField] public float scrollSpeed = 20f;
+    [SerializeField] public float minY = 20f;
+    [SerializeField] public float maxY = 120f;
+    [SerializeField] public float smoothSpeed = 5f;
 
     private Vector3 touchStart;
     private float initialPinchDistance;
     private float initialCameraHeight;
-    private bool isPanning = false; // Kamera hareketi için kullanılan bayrak
+    private bool isPanning = false; // To avoid giving direction to the character while moving the camera
 
     void Update()
     {
@@ -33,14 +34,14 @@ public class CameraController : MonoBehaviour
             }
             else if (touch.phase == TouchPhase.Moved)
             {
-                isPanning = true; // Kamera hareketi başladığını işaretle
+                isPanning = true;
                 Vector3 direction = touchStart - Camera.main.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y, Camera.main.transform.position.y));
                 pos.x += direction.x * panSpeed * Time.deltaTime;
                 pos.z += direction.z * panSpeed * Time.deltaTime;
             }
             else if (touch.phase == TouchPhase.Ended)
             {
-                isPanning = false; // Kamera hareketi bittiğini işaretle
+                isPanning = false;
             }
         }
         // İki parmakla büyütme/küçültme hareketi

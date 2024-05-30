@@ -5,19 +5,18 @@ using System.Collections;
 
 public class CharacterSelectionController : MonoBehaviour
 {
-    public LayerMask selectableLayer;
-    public LayerMask groundLayer;
-    public LayerMask treeLayer; // New layer mask for trees
+    [Header("LayerMasks")]
+    [SerializeField] private LayerMask selectableLayer;
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private LayerMask treeLayer;
 
-    public List<Character> allCharacters = new List<Character>();
-    public List<Character> selectedCharacters = new List<Character>();
+    [Header("Camera")]
+    [SerializeField] private CameraController cameraController;
 
-    private CameraController cameraController;
+    [Header("ListOfCharacters")]
+    private List<Character> allCharacters = new List<Character>();
+    private List<Character> selectedCharacters = new List<Character>();
 
-    void Start()
-    {
-        cameraController = GetComponent<CameraController>();
-    }
 
     void Update()
     {

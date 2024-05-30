@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
@@ -8,29 +9,33 @@ using UnityEngine;
 
 public class CanvasManager : MonoBehaviour
 {
-    public GameObject AuthPanel;
-    public GameObject ConnectionStatusPanel;
     public static CanvasManager instance;
+    public static Action onLaunchScreenOpenedWithoutLoginAction;
+
+
+    [Header("GameObjects")]
+
+    [SerializeField] public GameObject LoadingBar;
+    [SerializeField] public GameObject AuthPanel;
+    [SerializeField] public GameObject MatchmakingPanel;
+    [SerializeField] public GameObject playerNamePanel;
+    [SerializeField] public GameObject WoodPanel;
+    [SerializeField] public GameObject startMatchmakingButton, cancelMatcmakingButton;
+
+    [Header("Texts")]
 
     [SerializeField] public TMP_Text L_mailText;
     [SerializeField] public TMP_Text L_passwordText;
-
     [SerializeField] public TMP_Text R_mailText;
     [SerializeField] public TMP_Text R_playerNameText;
     [SerializeField] public TMP_Text R_passwordText;
-
-    public TMP_Text statusText;
-    public GameObject MatchmakingPanel;
-    public GameObject playerNamePanel;
-    public GameObject WoodPanel;
-    public TMP_Text playerDisplayName;
-    public TMP_Text playerWoodCount;
-
-    public TMP_Text player1Name;
-    public TMP_Text player2Name;
-
-    public GameObject startMatchmakingButton, cancelMatcmakingButton;
-    public TMP_Text matchmakingTimer;
+    [SerializeField] public TMP_Text statusText;
+    [SerializeField] public TMP_Text playerDisplayName;
+    [SerializeField] public TMP_Text playerWoodCount;
+    [SerializeField] public TMP_Text player1Name;
+    [SerializeField] public TMP_Text player2Name;
+    [SerializeField] public TMP_Text matchmakingTimer;
+    [SerializeField] public TMP_Text launchCountText;
 
 
 
@@ -44,21 +49,34 @@ public class CanvasManager : MonoBehaviour
     {
         PlayfabManager.onDataReceivedAction += CloseAuthPanel;
         PlayfabManager.onDataReceivedAction += UpdateCollectedWoodText;
+        AzureFunction.onGetLaunchCountSuccess += UpdateLaunchCountText;
+        onLaunchScreenOpenedWithoutLoginAction += UpdateLaunchCountText;
+        onLaunchScreenOpenedWithoutLoginAction += OpenProfilePanel;
     }
 
     private void OnDisable()
     {
         PlayfabManager.onDataReceivedAction -= CloseAuthPanel;
         PlayfabManager.onDataReceivedAction -= UpdateCollectedWoodText;
+        AzureFunction.onGetLaunchCountSuccess -= UpdateLaunchCountText;
+        onLaunchScreenOpenedWithoutLoginAction -= UpdateLaunchCountText;
+        onLaunchScreenOpenedWithoutLoginAction -= OpenProfilePanel;
+
     }
 
     void Start()
     {
-        if (!PlayFabClientAPI.IsClientLoggedIn()) AuthPanel.SetActive(true);
-        else OpenProfilePanel();
-
-        ConnectionStatusPanel.SetActive(false);
+        LoadingBar.SetActive(false);
         Cursor.lockState = CursorLockMode.None;
+
+        if (!PlayFabClientAPI.IsClientLoggedIn())
+        {
+            AuthPanel.SetActive(true);
+        }
+        else
+        {
+            onLaunchScreenOpenedWithoutLoginAction?.Invoke();
+        }
     }
 
     public void CreateMatchmakingTicket()
@@ -79,7 +97,7 @@ public class CanvasManager : MonoBehaviour
 
     public void CloseAuthPanel()
     {
-        ConnectionStatusPanel.SetActive(false);
+        LoadingBar.SetActive(false);
         AuthPanel.SetActive(false);
     }
 
@@ -88,11 +106,21 @@ public class CanvasManager : MonoBehaviour
         playerWoodCount.text = PlayfabManager.instance.playerProperty.collectedWoodCount.ToString();
     }
 
+    private void UpdateLaunchCountText()
+    {
+        launchCountText.text = "Launch Count From Azure: " + AzureFunction.launchCount;
+    }
+
     public void OpenProfilePanel()
     {
         playerDisplayName.text = PlayfabManager.displayName;
         playerNamePanel.SetActive(true);
         WoodPanel.SetActive(true);
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 
 }

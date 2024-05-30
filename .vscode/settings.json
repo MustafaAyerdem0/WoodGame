@@ -51,5 +51,11 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "WoodGame.sln"
+    "dotnet.defaultSolution": "WoodGame.sln",
+    "azureFunctions.deploySubpath": "Azure/bin/Release/net8.0/publish",
+    "azureFunctions.projectLanguage": "C#",
+    "azureFunctions.projectRuntime": "~4",
+    "debug.internalConsoleOptions": "neverOpen",
+    "azureFunctions.preDeployTask": "publish (functions)",
+    "playfab.loginId": "mustafa.ayerdem06@gmail.com"
 }
