@@ -14,8 +14,8 @@ public class CharacterSelectionController : MonoBehaviour
     [SerializeField] private CameraController cameraController;
 
     [Header("ListOfCharacters")]
-    private List<Character> allCharacters = new List<Character>();
-    private List<Character> selectedCharacters = new List<Character>();
+    public List<Character> allCharacters = new List<Character>();
+    public List<Character> selectedCharacters = new List<Character>();
 
 
     void Update()
