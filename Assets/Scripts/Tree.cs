@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -13,6 +14,9 @@ public class Tree : MonoBehaviourPun
     public BoxCollider boxColl;
 
     Outline outline;
+
+    public Canvas woodCountCanvas;
+    public TMP_Text woodCountText;
 
     private void Awake()
     {
@@ -40,9 +44,17 @@ public class Tree : MonoBehaviourPun
         }
     }
 
+    public void SpawnWoodText(Color teamColor)
+    {
+        TMP_Text woodCount = Instantiate(woodCountText, woodCountCanvas.transform);
+        print("spawnlandı");
+        woodCount.color = teamColor;
+        if (woodCount.gameObject != null) Destroy(woodCount.gameObject, 1f);
+    }
+
     public void DestroyTree()
     {
-        PhotonNetwork.Destroy(gameObject);
+        if (gameObject != null) PhotonNetwork.Destroy(gameObject);
     }
 
 }

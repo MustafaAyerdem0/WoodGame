@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -23,6 +24,10 @@ public class Character : MonoBehaviourPun
 
     public LayerMask playersLayerMask;
 
+    Color teamColor;
+
+    Coroutine lumberingCoroutine;
+
 
     private void Awake()
     {
@@ -33,16 +38,14 @@ public class Character : MonoBehaviourPun
         currentState.EnterState(this);
     }
 
+
+
     private void Start()
     {
         if (!PhotonNetwork.IsConnected) return;
         if (!photonView.IsMine)
         {
             gameObject.layer = 8;
-        }
-        else
-        {
-            StartCoroutine(LumberTree());
         }
         ChangeColor();
     }
@@ -62,6 +65,22 @@ public class Character : MonoBehaviourPun
     public IState GetState()
     {
         return currentState;
+    }
+
+    public void StartLumbering()
+    {
+        if (photonView.IsMine)
+        {
+            lumberingCoroutine = StartCoroutine(LumberTree());
+        }
+    }
+
+    public void StopLumbering()
+    {
+        if (photonView.IsMine && lumberingCoroutine != null)
+        {
+            StopCoroutine(lumberingCoroutine);
+        }
     }
 
     public void ChangeOutline(bool active)
@@ -95,6 +114,7 @@ public class Character : MonoBehaviourPun
                 targetTree = targetTreeObstacle.GetComponent<Tree>();
                 CutTree(targetTree.photonView.ViewID);
             }
+
         }
     }
 
@@ -111,6 +131,8 @@ public class Character : MonoBehaviourPun
         if (targetTree.hP >= 10)
         {
             targetTree.hP -= 10;
+            targetTree.SpawnWoodText(teamColor);
+
             if (targetTree.hP <= 0)
             {
                 targetTree.boxColl.isTrigger = false;
@@ -129,7 +151,6 @@ public class Character : MonoBehaviourPun
         else if (targetTree.hP <= 0)
         {
             ChangeState(new IdleState());
-            PhotonNetwork.Destroy(targetTree.gameObject);
         }
     }
 
@@ -141,6 +162,7 @@ public class Character : MonoBehaviourPun
     [PunRPC]
     void RPC_ChangeColor()
     {
-        transform.GetChild(1).GetComponent<Renderer>().material.color = GameManager.instance.colors[gameObject.GetPhotonView().OwnerActorNr - 1];
+        teamColor = GameManager.instance.colors[gameObject.GetPhotonView().OwnerActorNr - 1];
+        transform.GetChild(1).GetComponent<Renderer>().material.color = teamColor;
     }
 }
