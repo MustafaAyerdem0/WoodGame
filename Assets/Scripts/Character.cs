@@ -21,6 +21,8 @@ public class Character : MonoBehaviourPun
     private bool treeDestinationSet;
     public bool isLumbering;
 
+    public LayerMask playersLayerMask;
+
 
     private void Awake()
     {
@@ -91,29 +93,32 @@ public class Character : MonoBehaviourPun
             if (isLumbering && targetTreeObstacle != null)
             {
                 targetTree = targetTreeObstacle.GetComponent<Tree>();
-                CutTree();
+                CutTree(targetTree.photonView.ViewID);
             }
         }
     }
 
-    public void CutTree()
+    public void CutTree(int targetTreeViewId)
     {
-        photonView.RPC("RPC_CutTree", RpcTarget.All);
+        photonView.RPC("RPC_CutTree", RpcTarget.All, targetTreeViewId);
     }
 
     [PunRPC]
-    void RPC_CutTree()
+    void RPC_CutTree(int targetTreeViewId)
     {
+        Tree targetTree = PhotonView.Find(targetTreeViewId).GetComponent<Tree>();
+        print("hp--");
         if (targetTree.hP >= 10)
         {
             targetTree.hP -= 10;
             if (targetTree.hP <= 0)
             {
                 targetTree.boxColl.isTrigger = false;
+                targetTree.boxColl.excludeLayers = playersLayerMask;
                 targetTree.rb.isKinematic = false;
-                Vector3 directionToCenter = (Vector3.zero - targetTree.rb.position).normalized; // to apply force towards the center point
-                targetTree.rb.AddForceAtPosition(new Vector3(directionToCenter.x * 5, 0, directionToCenter.z * 5),
-                targetTree.transform.position + new Vector3(0, 6, 0), ForceMode.VelocityChange);
+                targetTree.navMeshObstacle.enabled = false;
+                targetTree.DropTree();
+
                 ChangeState(new IdleState());
 
             }

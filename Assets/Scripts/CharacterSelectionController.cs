@@ -61,7 +61,7 @@ public class CharacterSelectionController : MonoBehaviour
                     {
                         character.GetComponent<CapsuleCollider>().isTrigger = false;
                         if (character.targetTreeObstacle != null) character.targetTreeObstacle.enabled = true;
-                        character.targetTreeObstacle = hit.transform.GetComponent<NavMeshObstacle>();
+                        character.targetTreeObstacle = hit.transform.GetComponent<Tree>().navMeshObstacle;
                         character.targetTreeObstacle.enabled = false;
                         character.ChangeState(new WalkingState());
                         character.SetTreeDestination(hit.transform.position);
