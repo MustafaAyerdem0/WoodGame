@@ -1273,8 +1273,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81f168c38c11e0747b9dc29919949f5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetTreeObstacle: {fileID: 0}
   agent: {fileID: 0}
   animator: {fileID: 0}
+  isLumbering: 0
 --- !u!114 &8626915723165586734
 MonoBehaviour:
   m_ObjectHideFlags: 0
