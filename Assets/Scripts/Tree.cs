@@ -33,12 +33,16 @@ public class Tree : MonoBehaviourPun
     {
         if (photonView.IsMine)
         {
-            print("drop");
-            print(GetComponent<PhotonView>().IsMine);
             Vector3 directionToCenter = (Vector3.zero - rb.position).normalized; // to apply force towards the center point
             rb.AddForceAtPosition(new Vector3(directionToCenter.x * 3, 0, directionToCenter.z * 3),
             transform.position + new Vector3(0, 10, 0), ForceMode.VelocityChange);
+            Invoke(nameof(DestroyTree), 3);
         }
+    }
+
+    public void DestroyTree()
+    {
+        PhotonNetwork.Destroy(gameObject);
     }
 
 }

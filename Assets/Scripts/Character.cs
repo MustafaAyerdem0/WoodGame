@@ -117,6 +117,9 @@ public class Character : MonoBehaviourPun
                 targetTree.boxColl.excludeLayers = playersLayerMask;
                 targetTree.rb.isKinematic = false;
                 targetTree.navMeshObstacle.enabled = false;
+                Color color = Color.white;
+                color.a = 0.51f;
+                targetTree.GetComponent<Renderer>().material.color = color;
                 targetTree.DropTree();
 
                 ChangeState(new IdleState());

@@ -64,6 +64,7 @@ public class CharacterSelectionController : MonoBehaviour
                         character.targetTreeObstacle = hit.transform.GetComponent<Tree>().navMeshObstacle;
                         character.targetTreeObstacle.enabled = false;
                         character.ChangeState(new WalkingState());
+                        character.agent.isStopped = false;
                         character.SetTreeDestination(hit.transform.position);
                     }
                 }
@@ -77,6 +78,7 @@ public class CharacterSelectionController : MonoBehaviour
                     {
                         if (character.targetTreeObstacle != null) character.targetTreeObstacle.enabled = true;
                         character.GetComponent<CapsuleCollider>().isTrigger = false;
+                        character.agent.isStopped = false;
                         character.agent.SetDestination(hit.point);
                         character.SetTreeDestinationBool(false);
                         character.ChangeState(new WalkingState());
@@ -110,16 +112,17 @@ public class CharacterSelectionController : MonoBehaviour
         {
             if (character.agent != null && !character.agent.pathPending)
             {
-                if (character.agent.remainingDistance <= 0.6f)
+                if (character.agent.remainingDistance <= 1f)
                 {
                     if (character.agent.hasPath)
                     {
                         arrivedCharacters.Add(character);
                         selectedCharacters.Remove(character);
-                        character.agent.SetDestination(character.transform.position);
+                        character.agent.isStopped = true;
+                        character.agent.ResetPath();
 
                         // Change state based on the current state
-                        if (character.IsTreeDestinationSet())
+                        if (character.IsTreeDestinationSet() && character.targetTreeObstacle != null)
                         {
                             character.GetComponent<CapsuleCollider>().isTrigger = true;
                             character.ChangeState(new LumberingState());
