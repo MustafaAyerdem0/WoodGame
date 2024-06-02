@@ -23,7 +23,7 @@ public class EasyAudioUtility : MonoBehaviour
         else
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
         //Adding audio source in all helpers
         foreach (EasyAudioUtility_Helper h in helper)
@@ -47,10 +47,10 @@ public class EasyAudioUtility : MonoBehaviour
                         FindObjectOfType<OptionsController_Game>().musicSource = h.source;
                 }
 
-                
+
             }
         }
-        
+
     }
 
     /// <summary>
@@ -61,7 +61,7 @@ public class EasyAudioUtility : MonoBehaviour
     {
         EasyAudioUtility_Helper h = Array.Find(helper, item => item.name == sound);
         //randomizing volume by variation
-         h.source.volume = h.volume * (1f + UnityEngine.Random.Range(-h.volumeVariance / 2f, h.volumeVariance / 2f));
+        h.source.volume = h.volume * (1f + UnityEngine.Random.Range(-h.volumeVariance / 2f, h.volumeVariance / 2f));
         //randomizing pitch by variation
         h.source.pitch = h.pitch * (1f + UnityEngine.Random.Range(-h.pitchVariance / 2f, h.pitchVariance / 2f));
 

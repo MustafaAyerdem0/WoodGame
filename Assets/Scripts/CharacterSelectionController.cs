@@ -20,7 +20,7 @@ public class CharacterSelectionController : MonoBehaviour
 
     void Update()
     {
-        if (!cameraController.IsPanning()) HandleSelection(); // Eğer kamera hareketi yapılmıyorsa seçim ve hareket işlemlerini yap
+        HandleSelection(); // Eğer kamera hareketi yapılmıyorsa seçim ve hareket işlemlerini yap
         CheckArrival();
     }
 
@@ -44,10 +44,11 @@ public class CharacterSelectionController : MonoBehaviour
                 else
                 {
                     selectedCharacters.Add(selectedObject);
+                    AudioSourceManager.instance.PlaySelectedSoundEffect(PlayerProperty.instance.characterLanguageIndex);
                     selectedObject.ChangeOutline(true);
                 }
             }
-            else if (Physics.Raycast(ray, out hit, Mathf.Infinity, treeLayer))
+            else if (Physics.Raycast(ray, out hit, Mathf.Infinity, treeLayer) && !cameraController.IsPanning())
             {
                 StartCoroutine(hit.transform.GetComponent<Tree>().FlashOutline());
                 foreach (Character character in selectedCharacters)
@@ -61,11 +62,12 @@ public class CharacterSelectionController : MonoBehaviour
                         character.ChangeState(new WalkingState());
                         character.agent.isStopped = false;
                         character.SetTreeDestination(hit.transform.position);
+                        AudioSourceManager.instance.PlayLumberingSoundEffect(PlayerProperty.instance.characterLanguageIndex);
                     }
                 }
                 ClearSelectedCharacters();
             }
-            else if (Physics.Raycast(ray, out hit, Mathf.Infinity, groundLayer))
+            else if (Physics.Raycast(ray, out hit, Mathf.Infinity, groundLayer) && !cameraController.IsPanning())
             {
                 foreach (Character character in selectedCharacters)
                 {

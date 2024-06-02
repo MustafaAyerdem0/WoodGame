@@ -6,6 +6,7 @@ using PlayFab;
 using TMPro;
 using Unity.VisualScripting.AssemblyQualifiedNameParser;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CanvasManager : MonoBehaviour
 {
@@ -37,6 +38,10 @@ public class CanvasManager : MonoBehaviour
     [SerializeField] public TMP_Text matchmakingTimer;
     [SerializeField] public TMP_Text launchCountText;
 
+    [Header("Toggles")]
+    [SerializeField] public Toggle womanToggle;
+    [SerializeField] public Toggle manToggle;
+
 
 
     private void Awake()
@@ -49,20 +54,24 @@ public class CanvasManager : MonoBehaviour
     {
         PlayfabManager.onDataReceivedAction += CloseAuthPanel;
         PlayfabManager.onDataReceivedAction += UpdateCollectedWoodText;
+        PlayfabManager.onDataReceivedAction += UpdateLanguageFromDb;
         AzureFunction.onGetLaunchCountSuccess += UpdateLaunchCountText;
         onLaunchScreenOpenedWithoutLoginAction += UpdateLaunchCountText;
         onLaunchScreenOpenedWithoutLoginAction += OpenProfilePanel;
         onLaunchScreenOpenedWithoutLoginAction += UpdateCollectedWoodText;
+        onLaunchScreenOpenedWithoutLoginAction += UpdateLanguageFromDb;
     }
 
     private void OnDisable()
     {
         PlayfabManager.onDataReceivedAction -= CloseAuthPanel;
         PlayfabManager.onDataReceivedAction -= UpdateCollectedWoodText;
+        PlayfabManager.onDataReceivedAction -= UpdateLanguageFromDb;
         AzureFunction.onGetLaunchCountSuccess -= UpdateLaunchCountText;
         onLaunchScreenOpenedWithoutLoginAction -= UpdateLaunchCountText;
         onLaunchScreenOpenedWithoutLoginAction -= OpenProfilePanel;
         onLaunchScreenOpenedWithoutLoginAction -= UpdateCollectedWoodText;
+        onLaunchScreenOpenedWithoutLoginAction -= UpdateLanguageFromDb;
 
     }
 
@@ -123,6 +132,17 @@ public class CanvasManager : MonoBehaviour
     public void QuitGame()
     {
         Application.Quit();
+    }
+
+    public void UpdateLanguageFromDb()
+    {
+        if (PlayerProperty.instance.characterLanguageIndex == 0) womanToggle.isOn = true;
+        else manToggle.isOn = true;
+    }
+
+    public void ChangeLanguageOfCharacters(int index)
+    {
+        PlayerProperty.instance.characterLanguageIndex = index;
     }
 
 }

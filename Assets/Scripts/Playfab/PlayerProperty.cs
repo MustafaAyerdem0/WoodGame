@@ -9,6 +9,9 @@ public class PlayerProperty : DBSyncSynchronizer
     [SyncWithDatabase]
     public int collectedWoodCount;
 
+    [SyncWithDatabase]
+    public int characterLanguageIndex;
+
     private void Awake()
     {
         if (instance != null)
