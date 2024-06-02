@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         for (int i = 0; i < 3; i++)
         {
             GameObject go = PhotonNetwork.Instantiate(playerPrefab.name, Vector3.zero, Quaternion.identity);
-            go.transform.position = new Vector3(i + ((go.GetPhotonView().OwnerActorNr - 1) * 10), 0, 0);
+            go.transform.position = new Vector3(i + ((go.GetPhotonView().OwnerActorNr - 1) * 10), 0, -3f);
             characters.Add(go.GetComponent<Character>());
         }
 
@@ -75,13 +75,5 @@ public class GameManager : MonoBehaviourPunCallbacks
         SceneManager.LoadScene("LaunchScene");
     }
 
-    public void LeaveRoom()
-    {
-        PhotonNetwork.LeaveRoom();
-    }
 
-    public void QuitMatch()
-    {
-        Application.Quit();
-    }
 }

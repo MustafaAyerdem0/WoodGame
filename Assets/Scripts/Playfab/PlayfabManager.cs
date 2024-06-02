@@ -17,11 +17,6 @@ public class PlayfabManager : MonoBehaviour
     public Dictionary<string, DBSyncSynchronizer> dbKeys = new Dictionary<string, DBSyncSynchronizer>();
     public static string displayName;
 
-    public PlayerProperty playerProperty;
-
-
-
-
     private void Awake()
     {
         if (instance != null)
@@ -35,7 +30,6 @@ public class PlayfabManager : MonoBehaviour
             instance = this;
         }
 
-        playerProperty = FindObjectOfType<PlayerProperty>();
     }
 
     public void Register()

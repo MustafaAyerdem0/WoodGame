@@ -112,6 +112,12 @@ public class Character : MonoBehaviourPun
             if (isLumbering && targetTreeObstacle != null)
             {
                 targetTree = targetTreeObstacle.GetComponent<Tree>();
+                if (targetTree.hP > 0)
+                {
+                    PlayerProperty.instance.collectedWoodCount += 10;
+                    InGameUiManager.instance.UpdateText();
+
+                }
                 CutTree(targetTree.photonView.ViewID);
             }
 

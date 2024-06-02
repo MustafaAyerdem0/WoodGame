@@ -4,20 +4,39 @@ using UnityEngine;
 
 public class PlayerProperty : DBSyncSynchronizer
 {
+    public static PlayerProperty instance;
+
     [SyncWithDatabase]
     public int collectedWoodCount;
+
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            instance = this;
+        }
+    }
 
     public override void AddDBKeys()
     {
         base.AddDBKeys();
-        PlayfabManager.instance.dbKeys[this.GetType().Name] = this;
+        PlayfabManager.instance.dbKeys[GetType().Name] = this;
     }
 
     [ContextMenu("SaveData")]
     public override void SaveData()
     {
         base.SaveData();
-        PlayfabManager.instance.SaveData(this.GetType().Name);
+        PlayfabManager.instance.SaveData(GetType().Name);
+    }
+
+    private void OnApplicationQuit()
+    {
+        SaveData();
     }
 
 }

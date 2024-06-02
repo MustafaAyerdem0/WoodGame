@@ -52,6 +52,7 @@ public class CanvasManager : MonoBehaviour
         AzureFunction.onGetLaunchCountSuccess += UpdateLaunchCountText;
         onLaunchScreenOpenedWithoutLoginAction += UpdateLaunchCountText;
         onLaunchScreenOpenedWithoutLoginAction += OpenProfilePanel;
+        onLaunchScreenOpenedWithoutLoginAction += UpdateCollectedWoodText;
     }
 
     private void OnDisable()
@@ -61,6 +62,7 @@ public class CanvasManager : MonoBehaviour
         AzureFunction.onGetLaunchCountSuccess -= UpdateLaunchCountText;
         onLaunchScreenOpenedWithoutLoginAction -= UpdateLaunchCountText;
         onLaunchScreenOpenedWithoutLoginAction -= OpenProfilePanel;
+        onLaunchScreenOpenedWithoutLoginAction -= UpdateCollectedWoodText;
 
     }
 
@@ -103,7 +105,7 @@ public class CanvasManager : MonoBehaviour
 
     public void UpdateCollectedWoodText()
     {
-        playerWoodCount.text = PlayfabManager.instance.playerProperty.collectedWoodCount.ToString();
+        playerWoodCount.text = PlayerProperty.instance.collectedWoodCount.ToString();
     }
 
     private void UpdateLaunchCountText()

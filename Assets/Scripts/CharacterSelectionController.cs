@@ -20,18 +20,13 @@ public class CharacterSelectionController : MonoBehaviour
 
     void Update()
     {
-        if (!cameraController.IsPanning()) // Eğer kamera hareketi yapılmıyorsa seçim ve hareket işlemlerini yap
-        {
-            HandleSelection();
-            HandleMovement();
-            //PrintAgent();
-            CheckArrival();
-        }
+        if (!cameraController.IsPanning()) HandleSelection(); // Eğer kamera hareketi yapılmıyorsa seçim ve hareket işlemlerini yap
+        CheckArrival();
     }
 
     void HandleSelection()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonUp(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -99,10 +94,6 @@ public class CharacterSelectionController : MonoBehaviour
         }
     }
 
-    void HandleMovement()
-    {
-        // Movement handling is already done in HandleSelection.
-    }
 
     void CheckArrival()
     {

@@ -23,7 +23,6 @@ public class LumberingState : IState
         character.animator.SetBool("Lumbering", false);
         character.StopLumbering();
         character.isLumbering = false;
-        character.targetTreeObstacle = null;
         character.SetTreeDestinationBool(false);
     }
 }
