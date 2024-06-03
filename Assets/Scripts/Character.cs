@@ -4,6 +4,7 @@ using Photon.Pun;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class Character : MonoBehaviourPun
 {
@@ -27,6 +28,7 @@ public class Character : MonoBehaviourPun
     Color teamColor;
 
     Coroutine lumberingCoroutine;
+    public Image miniMapImage;
 
 
     private void Awake()
@@ -170,5 +172,7 @@ public class Character : MonoBehaviourPun
     {
         teamColor = GameManager.instance.colors[gameObject.GetPhotonView().OwnerActorNr - 1];
         transform.GetChild(1).GetComponent<Renderer>().material.color = teamColor;
+        miniMapImage.color = teamColor;
+        if (photonView.IsMine) InGameUiManager.instance.SetCharactersProfile(teamColor);
     }
 }

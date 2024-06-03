@@ -119,7 +119,6 @@ public class LaunchManager : MonoBehaviourPunCallbacks
                     CanvasManager.instance.statusText.text = "Match found!";
                     isMatchmaking = false;
                     string matchId = result.MatchId;
-                    PhotonNetwork.ConnectUsingSettings();
                     PhotonNetwork.GameVersion = "1";
                     loop = false;
                     if (timeoutCoroutine != null)

@@ -4,6 +4,7 @@ using Photon.Pun.Demo.Procedural;
 using Photon.Pun;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Video;
 
 public class InGameUiManager : MonoBehaviour
 {
@@ -12,6 +13,9 @@ public class InGameUiManager : MonoBehaviour
     public TMP_Text woodCountText;
 
     public Animation countScaleAnimation;
+    public VideoPlayer videoPlayer;
+
+    public VideoClip greenCharacter, redCharacter;
 
     private void Awake()
     {
@@ -38,6 +42,12 @@ public class InGameUiManager : MonoBehaviour
         woodCountText.text = PlayerProperty.instance.collectedWoodCount.ToString();
     }
 
+    public void SetCharactersProfile(Color teamColor)
+    {
+        if (teamColor == GameManager.instance.colors[0]) videoPlayer.clip = greenCharacter;
+        else videoPlayer.clip = redCharacter;
+    }
+
     public void LeaveRoom()
     {
         PlayerProperty.instance.SaveData();
@@ -48,6 +58,5 @@ public class InGameUiManager : MonoBehaviour
     {
         Application.Quit();
     }
-
 
 }
