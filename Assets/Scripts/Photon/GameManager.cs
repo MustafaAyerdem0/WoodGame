@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public List<Color> colors = new List<Color>();
 
     public List<Character> characters = new List<Character>();
+    public List<CharacterProfile> characterProfiles = new List<CharacterProfile>();
 
     private void Awake()
     {
@@ -51,7 +52,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             GameObject go = PhotonNetwork.Instantiate(playerPrefab.name, Vector3.zero, Quaternion.identity);
             go.transform.position = new Vector3(i + ((go.GetPhotonView().OwnerActorNr - 1) * 10), 0, -3f);
-            characters.Add(go.GetComponent<Character>());
+            Character character = go.GetComponent<Character>();
+            character.CharacterNumber = i;
+            characterProfiles[i].character = character;
+            character.characterProfile = characterProfiles[i];
+            characters.Add(character);
         }
 
     }

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class UIController : MonoBehaviour {
+public class UIController : MonoBehaviour
+{
 
     [Tooltip("Usee Blur in Pause Menu?")]
     public bool useBlur;
@@ -22,7 +23,8 @@ public class UIController : MonoBehaviour {
     public bool usingUFPS = false;
 
     // Use this for initialization
-    IEnumerator Start () {
+    IEnumerator Start()
+    {
 
         //find fader
         fader = FindObjectOfType<Fader>();
@@ -32,14 +34,15 @@ public class UIController : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update()
+    {
 
         //if using UFPS
         if (usingUFPS)
             return; //exit
 
         //if save menu is not opened
-        if (!saveMenu.active && canOpen())
+        if (!saveMenu.activeSelf && canOpen())
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
@@ -49,9 +52,10 @@ public class UIController : MonoBehaviour {
                     closePauseMenu();
             }
         }
-	}
+    }
 
-    public void openPauseMenu() {
+    public void openPauseMenu()
+    {
 
         allUI = FindObjectsOfType<Canvas>();
         //disable all UI
@@ -71,7 +75,7 @@ public class UIController : MonoBehaviour {
         GetComponent<Animator>().Play("OpenPauseMenu");
 
         //time = almost 0
-        if(!usingUFPS)
+        if (!usingUFPS)
             Time.timeScale = 0.0001f;
 
         isOpen = true;
@@ -91,16 +95,17 @@ public class UIController : MonoBehaviour {
     }
 
 
-    public void closePauseMenu() {
+    public void closePauseMenu()
+    {
 
         //enable all UI
         for (int i = 0; i < allUI.Length; i++)
         {
-           allUI[i].gameObject.SetActive(true);
+            allUI[i].gameObject.SetActive(true);
         }
 
         //time = 1
-        if(!usingUFPS)
+        if (!usingUFPS)
             Time.timeScale = 1;
 
         //play sound
@@ -115,19 +120,21 @@ public class UIController : MonoBehaviour {
         //enable blur
         if (useBlur)
         {
-            if(Camera.main.GetComponent<Animator>())
-            Camera.main.GetComponent<Animator>().Play("BlurOff");
+            if (Camera.main.GetComponent<Animator>())
+                Camera.main.GetComponent<Animator>().Play("BlurOff");
 
         }
 
     }
 
-    public void hideMenus() {
+    public void hideMenus()
+    {
         saveMenu.SetActive(false);
         pauseMenu.SetActive(false);
     }
 
-    public void goToMainMenu() {
+    public void goToMainMenu()
+    {
         //delete player
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         Destroy(player);
@@ -136,12 +143,12 @@ public class UIController : MonoBehaviour {
         Time.timeScale = 1f;
 
         //load main menu
-        #if !EMM_ES2
+#if !EMM_ES2
         PlayerPrefs.SetString("sceneToLoad", "");
-        #else
+#else
         PlayerPrefs.SetString("sceneToLoad", "");
         ES2.Save("", "sceneToLoad");
-        #endif
+#endif
 
         //hide all menus
         hideMenus();
@@ -150,16 +157,19 @@ public class UIController : MonoBehaviour {
         fader.FadeIntoLevel("LoadingScreen");
     }
 
-    public void openLoadGame() {
+    public void openLoadGame()
+    {
         GetComponent<Animator>().Play("loadGameOpen");
         initLoadGameMenu();
     }
 
-    public void closeLoadGame() {
+    public void closeLoadGame()
+    {
         GetComponent<Animator>().Play("loadGameClose");
     }
 
-    void initLoadGameMenu() {
+    void initLoadGameMenu()
+    {
         if (loadSlots.Count > 0)
         {
             foreach (LoadSlotIdentifier lsi in loadSlots)

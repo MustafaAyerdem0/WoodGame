@@ -5,23 +5,18 @@ using UnityEngine;
 
 public class CharacterProfile : MonoBehaviour
 {
-    public TMP_Text woodCount;
-    public Outline outline;
+    public int woodCount;
+    public TMP_Text woodCountText;
+    public UnityEngine.UI.Outline outline;
+    [HideInInspector]
     public Character character;
-    private void Awake()
+
+
+    public void SelectCharacterButtton()
     {
-        outline = GetComponent<Outline>();
+        character.SelectCharacter();
     }
 
-    public void SelectCharacter()
-    {
-        outline.enabled = false;
-    }
-
-    public void UnSelectCharacter()
-    {
-        outline.enabled = true;
-    }
 
 
 }

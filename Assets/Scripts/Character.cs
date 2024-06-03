@@ -30,6 +30,14 @@ public class Character : MonoBehaviourPun
     Coroutine lumberingCoroutine;
     public Image miniMapImage;
 
+    public int CharacterNumber;
+
+    public CharacterProfile characterProfile;
+
+    public bool isSelected;
+
+    public bool selectedWhileWalking;
+
 
     private void Awake()
     {
@@ -55,6 +63,7 @@ public class Character : MonoBehaviourPun
     private void Update()
     {
         currentState.UpdateState(this);
+        CheckArrival();
     }
 
     public void ChangeState(IState state)
@@ -87,7 +96,8 @@ public class Character : MonoBehaviourPun
 
     public void ChangeOutline(bool active)
     {
-        outline.enabled = active;
+        outline.OutlineMode = active ? Outline.Mode.OutlineVisible : Outline.Mode.OutlineHidden;
+        characterProfile.outline.enabled = active;
     }
 
     public void SetTreeDestination(Vector3 destination)
@@ -106,6 +116,87 @@ public class Character : MonoBehaviourPun
         return treeDestinationSet;
     }
 
+
+    public void SelectCharacter()
+    {
+        if (CharacterSelectionController.instance.selectedCharacters.Contains(this))
+        {
+            CharacterSelectionController.instance.selectedCharacters.Remove(this);
+            selectedWhileWalking = false;
+            ChangeOutline(false);
+        }
+        else
+        {
+            CharacterSelectionController.instance.selectedCharacters.Add(this);
+            if (agent.hasPath) selectedWhileWalking = true;
+            AudioSourceManager.instance.PlaySelectedSoundEffect(PlayerProperty.instance.characterLanguageIndex);
+            ChangeOutline(true);
+        }
+    }
+
+    public void GoToGivenTree(RaycastHit hit)
+    {
+        if (agent != null)
+        {
+            GetComponent<CapsuleCollider>().isTrigger = false;
+            if (targetTreeObstacle != null) targetTreeObstacle.enabled = true;
+            targetTreeObstacle = hit.transform.GetComponent<Tree>().navMeshObstacle;
+            targetTreeObstacle.enabled = false;
+            selectedWhileWalking = false;
+            ChangeState(new WalkingState());
+            agent.isStopped = false;
+            SetTreeDestination(hit.transform.position);
+            AudioSourceManager.instance.PlayLumberingSoundEffect(PlayerProperty.instance.characterLanguageIndex);
+        }
+    }
+
+    public void GoToGivenPoint(RaycastHit hit)
+    {
+        if (agent != null)
+        {
+            if (targetTreeObstacle != null) targetTreeObstacle.enabled = true;
+            GetComponent<CapsuleCollider>().isTrigger = false;
+            agent.isStopped = false;
+            selectedWhileWalking = false;
+            agent.SetDestination(hit.point);
+            SetTreeDestinationBool(false);
+            ChangeState(new WalkingState());
+        }
+    }
+
+    public void CheckArrival()
+    {
+        if (agent != null && !agent.pathPending)
+        {
+            if (agent.remainingDistance <= 1f)
+            {
+                if (agent.hasPath)
+                {
+                    if (!selectedWhileWalking)
+                    {
+                        CharacterSelectionController.instance.selectedCharacters.Remove(this);
+                        ChangeOutline(false);
+                    }
+
+                    agent.isStopped = true;
+                    agent.ResetPath();
+
+                    // Change state based on the current state
+                    if (IsTreeDestinationSet() && targetTreeObstacle != null)
+                    {
+                        GetComponent<CapsuleCollider>().isTrigger = true;
+                        ChangeState(new LumberingState());
+                    }
+                    else
+                    {
+                        ChangeState(new IdleState());
+                    }
+                }
+            }
+        }
+    }
+
+
     public IEnumerator LumberTree()
     {
         while (true)
@@ -118,11 +209,11 @@ public class Character : MonoBehaviourPun
                 {
                     PlayerProperty.instance.collectedWoodCount += 10;
                     InGameUiManager.instance.UpdateText();
-
+                    characterProfile.woodCount += 10;
+                    characterProfile.woodCountText.text = characterProfile.woodCount.ToString();
                 }
                 CutTree(targetTree.photonView.ViewID);
             }
-
         }
     }
 

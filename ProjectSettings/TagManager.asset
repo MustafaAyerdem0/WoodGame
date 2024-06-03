@@ -16,7 +16,7 @@ TagManager:
   - Tree
   - OpponentCharacter
   - MiniMapObjectsLayer
-  - 
+  - PreventRaycastUiLayer
   - 
   - 
   - 
