@@ -17,9 +17,11 @@ public class CameraController : MonoBehaviour
     private Vector3 touchStart;
     private float initialPinchDistance;
     private float initialCameraHeight;
+
+    [SerializeField]
     private bool isPanning = false; // To avoid giving direction to the character while moving the camera
 
-    void Update()
+    void FixedUpdate() // Updated to FixedUpdate
     {
         Vector3 pos = transform.position;
 
@@ -36,12 +38,12 @@ public class CameraController : MonoBehaviour
             {
                 isPanning = true;
                 Vector3 direction = touchStart - Camera.main.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y, Camera.main.transform.position.y));
-                pos.x += direction.x * panSpeed * Time.deltaTime;
-                pos.z += direction.z * panSpeed * Time.deltaTime;
+                pos.x += direction.x * panSpeed * Time.fixedDeltaTime;
+                pos.z += direction.z * panSpeed * Time.fixedDeltaTime;
             }
             else if (touch.phase == TouchPhase.Ended)
             {
-                isPanning = false;
+                Invoke(nameof(EndOfPaning), 0.15f);
             }
         }
         // İki parmakla büyütme/küçültme hareketi
@@ -61,48 +63,53 @@ public class CameraController : MonoBehaviour
                 float currentPinchDistance = Vector2.Distance(touchZero.position, touchOne.position);
                 float pinchDifference = initialPinchDistance - currentPinchDistance;
 
-                float targetHeight = initialCameraHeight + pinchDifference * scrollSpeed * Time.deltaTime;
+                float targetHeight = initialCameraHeight + pinchDifference * scrollSpeed * Time.fixedDeltaTime;
                 targetHeight = Mathf.Clamp(targetHeight, minY, maxY);
 
                 // Yumuşatılmış kamera hareketi
-                pos.y = Mathf.Lerp(pos.y, targetHeight, smoothSpeed * Time.deltaTime);
+                pos.y = Mathf.Lerp(pos.y, targetHeight, smoothSpeed * Time.fixedDeltaTime);
             }
             else if (touchZero.phase == TouchPhase.Ended || touchOne.phase == TouchPhase.Ended)
             {
-                isPanning = false; // Kamera hareketi bittiğini işaretle
+                Invoke(nameof(EndOfPaning), 0.15f); // Hemen false olursa selectin scripti çalışabiliyor
             }
         }
         // Fare tekerleği ile yakınlaştırma/uzaklaştırma
         else if (Input.GetAxis("Mouse ScrollWheel") != 0)
         {
             float scroll = Input.GetAxis("Mouse ScrollWheel");
-            pos.y -= scroll * scrollSpeed * Time.deltaTime;
+            pos.y -= scroll * scrollSpeed * Time.fixedDeltaTime;
             pos.y = Mathf.Clamp(pos.y, minY, maxY);
         }
 
-        // Kenar hareketleri (mouse veya klavye)
-        if (Input.GetKey("w") || Input.mousePosition.y >= Screen.height - panBorderThickness)
-        {
-            pos.z += panSpeed * Time.deltaTime;
-        }
-        if (Input.GetKey("s") || Input.mousePosition.y <= panBorderThickness)
-        {
-            pos.z -= panSpeed * Time.deltaTime;
-        }
-        if (Input.GetKey("a") || Input.mousePosition.x <= panBorderThickness)
-        {
-            pos.x -= panSpeed * Time.deltaTime;
-        }
-        if (Input.GetKey("d") || Input.mousePosition.x >= Screen.width - panBorderThickness)
-        {
-            pos.x += panSpeed * Time.deltaTime;
-        }
+        // // Kenar hareketleri (mouse veya klavye)
+        // if (Input.GetKey("w") || Input.mousePosition.y >= Screen.height - panBorderThickness)
+        // {
+        //     pos.z += panSpeed * Time.fixedDeltaTime;
+        // }
+        // if (Input.GetKey("s") || Input.mousePosition.y <= panBorderThickness)
+        // {
+        //     pos.z -= panSpeed * Time.fixedDeltaTime;
+        // }
+        // if (Input.GetKey("a") || Input.mousePosition.x <= panBorderThickness)
+        // {
+        //     pos.x -= panSpeed * Time.fixedDeltaTime;
+        // }
+        // if (Input.GetKey("d") || Input.mousePosition.x >= Screen.width - panBorderThickness)
+        // {
+        //     pos.x += panSpeed * Time.fixedDeltaTime;
+        // }
 
         // Kameranın pozisyonunu sınırla
         pos.x = Mathf.Clamp(pos.x, -panLimit.x, panLimit.x);
         pos.z = Mathf.Clamp(pos.z, -panLimit.z, panLimit.z);
 
         transform.position = pos;
+    }
+
+    public void EndOfPaning()
+    {
+        isPanning = false;
     }
 
     public bool IsPanning()

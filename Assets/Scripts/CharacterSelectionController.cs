@@ -20,6 +20,9 @@ public class CharacterSelectionController : MonoBehaviour
 
     [Header("ListOfCharacters")]
     public List<Character> selectedCharacters = new List<Character>();
+    public GameObject trackMarkerPrefab;
+    private GameObject trackMarker;
+    private float windowDpi;
 
     private void Awake()
     {
@@ -33,6 +36,14 @@ public class CharacterSelectionController : MonoBehaviour
 
             instance = this;
         }
+    }
+
+
+    void Start()
+    {
+        if (Screen.dpi < 1) windowDpi = 1;
+        if (Screen.dpi < 200) windowDpi = 1;
+        else windowDpi = Screen.dpi / 200f;
     }
 
 
@@ -53,7 +64,6 @@ public class CharacterSelectionController : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
-
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, selectableLayer))
             {
                 Character selectedCharacter = hit.collider.GetComponent<Character>();
@@ -67,9 +77,11 @@ public class CharacterSelectionController : MonoBehaviour
                     character.GoToGivenTree(hit);
                 }
                 ClearSelectedCharacters();
+
             }
             else if (Physics.Raycast(ray, out hit, Mathf.Infinity, groundLayer) && !cameraController.IsPanning())
             {
+                InstantiateTrackMarker(hit);
                 foreach (Character character in selectedCharacters)
                 {
                     character.GoToGivenPoint(hit);
@@ -77,6 +89,13 @@ public class CharacterSelectionController : MonoBehaviour
                 ClearSelectedCharacters();
             }
         }
+    }
+
+    public void InstantiateTrackMarker(RaycastHit hit)
+    {
+        trackMarker = Instantiate(trackMarkerPrefab);
+        trackMarker.transform.position = hit.point + hit.normal * 0.01f;
+        Destroy(trackMarker, 1.5f);
     }
 
     private bool IsPointerOverUIObject()
@@ -129,4 +148,5 @@ public class CharacterSelectionController : MonoBehaviour
             selectedCharacters.Remove(character);
         }
     }
+
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using EPOOutline;
 using Photon.Pun;
 using TMPro;
 using UnityEngine;
@@ -13,16 +14,18 @@ public class Tree : MonoBehaviourPun
 
     public BoxCollider boxColl;
 
-    Outline outline;
+    Outlinable outline;
 
     public Canvas woodCountCanvas;
     public TMP_Text woodCountText;
+
+    public Material transparentMaterial;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         boxColl = GetComponent<BoxCollider>();
-        outline = GetComponent<Outline>();
+        outline = GetComponent<Outlinable>();
         navMeshObstacle = GetComponent<NavMeshObstacle>();
     }
 

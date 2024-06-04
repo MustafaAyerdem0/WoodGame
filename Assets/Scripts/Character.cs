@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using EPOOutline;
 using Photon.Pun;
 using TMPro;
 using UnityEngine;
@@ -11,7 +12,7 @@ public class Character : MonoBehaviourPun
     //[HideInInspector]
     public NavMeshObstacle targetTreeObstacle;
     private Tree targetTree;
-    Outline outline;
+    Outlinable outline;
 
     [HideInInspector]
     public NavMeshAgent agent;
@@ -41,7 +42,7 @@ public class Character : MonoBehaviourPun
 
     private void Awake()
     {
-        outline = GetComponent<Outline>();
+        outline = GetComponent<Outlinable>();
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
         currentState = new IdleState();
@@ -96,7 +97,7 @@ public class Character : MonoBehaviourPun
 
     public void ChangeOutline(bool active)
     {
-        outline.OutlineMode = active ? Outline.Mode.OutlineVisible : Outline.Mode.OutlineHidden;
+        outline.enabled = active;
         characterProfile.outline.enabled = active;
     }
 
@@ -238,6 +239,7 @@ public class Character : MonoBehaviourPun
                 targetTree.boxColl.excludeLayers = playersLayerMask;
                 targetTree.rb.isKinematic = false;
                 targetTree.navMeshObstacle.enabled = false;
+                targetTree.GetComponent<MeshRenderer>().material = targetTree.transparentMaterial;
                 Color color = Color.white;
                 color.a = 0.51f;
                 targetTree.GetComponent<Renderer>().material.color = color;

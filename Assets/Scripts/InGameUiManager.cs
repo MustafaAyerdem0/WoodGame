@@ -32,14 +32,14 @@ public class InGameUiManager : MonoBehaviour
     private void Start()
     {
         print("start calisti");
-        woodCountText.text = PlayerProperty.instance.collectedWoodCount.ToString();
+        woodCountText.text = PlayerProperty.instance?.collectedWoodCount.ToString();
     }
 
 
     public void UpdateText()
     {
         countScaleAnimation.Play();
-        woodCountText.text = PlayerProperty.instance.collectedWoodCount.ToString();
+        woodCountText.text = PlayerProperty.instance?.collectedWoodCount.ToString();
     }
 
     public void SetCharactersProfile(Color teamColor)
