@@ -21,7 +21,25 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     private bool isPanning = false; // To avoid giving direction to the character while moving the camera
 
-    void FixedUpdate() // Updated to FixedUpdate
+
+    private void Update()
+    {
+#if UNITY_EDITOR
+        ControlCamera();
+#endif
+    }
+
+
+
+    private void FixedUpdate()
+    {
+#if !UNITY_EDITOR 
+        ControlCamera();
+
+#endif
+    }
+
+    void ControlCamera() // Updated to FixedUpdate
     {
         Vector3 pos = transform.position;
 
@@ -81,25 +99,6 @@ public class CameraController : MonoBehaviour
             pos.y -= scroll * scrollSpeed * Time.fixedDeltaTime;
             pos.y = Mathf.Clamp(pos.y, minY, maxY);
         }
-
-        // // Kenar hareketleri (mouse veya klavye)
-        // if (Input.GetKey("w") || Input.mousePosition.y >= Screen.height - panBorderThickness)
-        // {
-        //     pos.z += panSpeed * Time.fixedDeltaTime;
-        // }
-        // if (Input.GetKey("s") || Input.mousePosition.y <= panBorderThickness)
-        // {
-        //     pos.z -= panSpeed * Time.fixedDeltaTime;
-        // }
-        // if (Input.GetKey("a") || Input.mousePosition.x <= panBorderThickness)
-        // {
-        //     pos.x -= panSpeed * Time.fixedDeltaTime;
-        // }
-        // if (Input.GetKey("d") || Input.mousePosition.x >= Screen.width - panBorderThickness)
-        // {
-        //     pos.x += panSpeed * Time.fixedDeltaTime;
-        // }
-
         // Kameranın pozisyonunu sınırla
         pos.x = Mathf.Clamp(pos.x, -panLimit.x, panLimit.x);
         pos.z = Mathf.Clamp(pos.z, -panLimit.z, panLimit.z);

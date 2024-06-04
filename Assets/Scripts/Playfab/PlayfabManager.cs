@@ -24,12 +24,10 @@ public class PlayfabManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
         else
         {
             instance = this;
         }
-
     }
 
     public void Register()
@@ -91,14 +89,12 @@ public class PlayfabManager : MonoBehaviour
     {
         Debug.Log("Register Successful");
         CanvasManager.instance.statusText.text = "Register Successful!";
-        // Kayıt başarılı olduğunda yapılacak işlemler
     }
 
     private void OnError(PlayFabError error)
     {
         Debug.LogError("Failure: " + error.ErrorMessage);
         CanvasManager.instance.statusText.text = "Failure: " + error.GenerateErrorReport();
-        // Hata durumunda yapılacak işlemler
     }
 
     public void SaveData(string key)
@@ -176,6 +172,4 @@ public class PlayfabManager : MonoBehaviour
     {
         Debug.Log(result);
     }
-
-
 }

@@ -21,7 +21,7 @@ public class CanvasManager : MonoBehaviour
     [SerializeField] public GameObject MatchmakingPanel;
     [SerializeField] public GameObject playerNamePanel;
     [SerializeField] public GameObject WoodPanel;
-    [SerializeField] public GameObject startMatchmakingButton, cancelMatcmakingButton;
+    [SerializeField] public GameObject startMatchmakingButton, cancelMatcmakingButton, startSingleGameButton;
 
     [Header("Texts")]
 
@@ -90,12 +90,20 @@ public class CanvasManager : MonoBehaviour
         }
     }
 
+    public void StartSingleGame()
+    {
+        LaunchManager.instance.StartCoroutine(nameof(LaunchManager.instance.CreateSingleRoom));
+        startMatchmakingButton.GetComponent<Button>().interactable = false;
+        cancelMatcmakingButton.GetComponent<Button>().interactable = false;
+    }
+
     public void CreateMatchmakingTicket()
     {
         LaunchManager.instance.CreateMatchmakingTicket();
         matchmakingTimer.gameObject.SetActive(true);
         cancelMatcmakingButton.SetActive(true);
         startMatchmakingButton.SetActive(false);
+        startSingleGameButton.GetComponent<Button>().interactable = false;
     }
 
     public void CancelMatchmakingTicket()
@@ -104,6 +112,7 @@ public class CanvasManager : MonoBehaviour
         matchmakingTimer.gameObject.SetActive(false);
         cancelMatcmakingButton.SetActive(false);
         startMatchmakingButton.SetActive(true);
+        startSingleGameButton.GetComponent<Button>().interactable = true;
     }
 
     public void CloseAuthPanel()

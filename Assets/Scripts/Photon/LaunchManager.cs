@@ -21,8 +21,6 @@ public class LaunchManager : MonoBehaviourPunCallbacks
     float timer;
     bool isMatchmaking;
 
-    #region Unity Methods
-
     private void Awake()
     {
         if (instance != null)
@@ -54,10 +52,6 @@ public class LaunchManager : MonoBehaviourPunCallbacks
         }
     }
 
-    #endregion
-
-    #region Public Methods
-
     public void ConnectToPhotonServer()
     {
         if (!PhotonNetwork.IsConnected)
@@ -65,6 +59,12 @@ public class LaunchManager : MonoBehaviourPunCallbacks
             PhotonNetwork.ConnectUsingSettings();
         }
     }
+
+    public void SetDisplayName(string name)
+    {
+        PhotonNetwork.NickName = name;
+    }
+
 
     public void CreateMatchmakingTicket()
     {
@@ -103,7 +103,6 @@ public class LaunchManager : MonoBehaviourPunCallbacks
         bool loop = true;
         while (loop)
         {
-            print("calisiyor");
             var request = new GetMatchmakingTicketRequest
             {
                 TicketId = ticketId,
@@ -143,7 +142,6 @@ public class LaunchManager : MonoBehaviourPunCallbacks
     private IEnumerator MatchmakingTimeoutCoroutine(float timeout)
     {
         yield return new WaitForSeconds(timeout - 0.1f);
-        print("durdu");
         StopCoroutine(matchmakingCoroutine);
         matchmakingCoroutine = null;
         checkCoroutine = StartCoroutine(CheckTicket());
@@ -168,11 +166,9 @@ public class LaunchManager : MonoBehaviourPunCallbacks
 
         PlayFabMultiplayerAPI.GetMatchmakingTicket(request, result =>
         {
-            // Ticket'ın durumu "Canceled" ise
             if (result.Status == "Canceled")
             {
                 Debug.Log("Matchmaking ticket canceled. Starting new matchmaking...");
-                // Yeni matchmaking işlemini başlat
                 CreateMatchmakingTicket();
             }
             else
@@ -211,14 +207,26 @@ public class LaunchManager : MonoBehaviourPunCallbacks
         StopAllCoroutines();
 
         Debug.Log("Matchmaking ticket canceled successfully: " + currentTicketId);
-        currentTicketId = null;
         CanvasManager.instance.statusText.text = "Matchmaking ticket canceled successfully.";
+        currentTicketId = null;
         isMatchmaking = false;
         timer = 0;
     }
 
 
-    private IEnumerator JoinPhotonRoom(string roomName)
+    public IEnumerator CreateSingleRoom() // Single Room
+    {
+        while (!PhotonNetwork.IsConnectedAndReady)
+        {
+            yield return null;
+        }
+        RoomOptions roomOptions = new RoomOptions();
+        roomOptions.MaxPlayers = 1;
+        PhotonNetwork.CreateRoom(PlayfabManager.displayName + Random.Range(0, 999999).ToString(), roomOptions, TypedLobby.Default);
+    }
+
+
+    private IEnumerator JoinPhotonRoom(string roomName)  // Multiplayer Room
     {
         while (!PhotonNetwork.IsConnectedAndReady)
         {
@@ -226,9 +234,65 @@ public class LaunchManager : MonoBehaviourPunCallbacks
         }
 
         RoomOptions roomOptions = new RoomOptions();
-        roomOptions.MaxPlayers = 2; // 1v1 oda için maksimum oyuncu sayısı 2
+        roomOptions.MaxPlayers = 2;
 
         PhotonNetwork.JoinOrCreateRoom(roomName, roomOptions, TypedLobby.Default);
+    }
+
+
+
+    public void LeaveRoom()
+    {
+        PhotonNetwork.LeaveRoom();
+    }
+
+    public void PrepareMatchmakingScreen()  // This create Vs. Screen
+    {
+        CanvasManager.instance.MatchmakingPanel.SetActive(true);
+        timer = 0;
+        int i = 0;
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            if (i == 0) CanvasManager.instance.player1Name.text = player.NickName;
+            if (i == 1) CanvasManager.instance.player2Name.text = PhotonNetwork.CurrentRoom.Players[2].NickName;
+            i++;
+        }
+    }
+
+    public IEnumerator LoadGameScene()
+    {
+        if (PhotonNetwork.CurrentRoom.MaxPlayers == 1)
+        {
+            PhotonNetwork.LoadLevel("GameScene");
+            yield break;
+        }
+        while (true)
+        {
+            if (PhotonNetwork.CurrentRoom.PlayerCount > 1)
+            {
+                yield return new WaitForSeconds(1);
+                PrepareMatchmakingScreen();
+                yield return new WaitForSeconds(2);
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    PhotonNetwork.LoadLevel("GameScene");
+                    yield break;
+                }
+                break;
+            }
+            yield return new WaitForSeconds(1);
+        }
+
+    }
+
+
+    #region Photon Callbacks
+
+    public override void OnConnectedToMaster() { }
+
+    public override void OnConnected()
+    {
+        Debug.Log("Connected to Internet!");
     }
 
     public override void OnJoinedRoom()
@@ -244,89 +308,11 @@ public class LaunchManager : MonoBehaviourPunCallbacks
         Debug.LogWarning("Failed to join room: " + message);
     }
 
-    public void LeaveRoom()
-    {
-        PhotonNetwork.LeaveRoom(); // Oyuncuyu Photon odasından çıkar
-    }
-
-    public void PrepareMatchmakingScreen()
-    {
-        CanvasManager.instance.MatchmakingPanel.SetActive(true);
-        timer = 0;
-        int i = 0;
-        foreach (Player player in PhotonNetwork.PlayerList)
-        {
-            if (i == 0) CanvasManager.instance.player1Name.text = player.NickName;
-            if (i == 1) CanvasManager.instance.player2Name.text = PhotonNetwork.CurrentRoom.Players[2].NickName;
-            i++;
-        }
-    }
-
-    public IEnumerator LoadGameScene()
-    {
-        while (true)
-        {
-            if (PhotonNetwork.CurrentRoom.PlayerCount > 1)
-            {
-                yield return new WaitForSeconds(1);
-                PrepareMatchmakingScreen();
-                yield return new WaitForSeconds(2);
-                if (PhotonNetwork.IsMasterClient)
-                {
-                    PhotonNetwork.LoadLevel("TestScene");
-                }
-                break;
-            }
-            yield return new WaitForSeconds(1);
-        }
-
-    }
-
-    private void StopCoroutines()
-    {
-
-        // Stop all coroutines if the object is being destroyed
-        if (matchmakingCoroutine != null)
-        {
-            StopCoroutine(matchmakingCoroutine);
-            matchmakingCoroutine = null;
-        }
-        if (checkCoroutine != null)
-        {
-            StopCoroutine(checkCoroutine);
-            checkCoroutine = null;
-        }
-        if (timeoutCoroutine != null)
-        {
-            StopCoroutine(timeoutCoroutine);
-            timeoutCoroutine = null;
-        }
-
-    }
-
-
-
-    #endregion
-
-    #region Photon Callbacks
-
-    public override void OnConnectedToMaster() { }
-
-    public override void OnConnected()
-    {
-        Debug.Log("Connected to Internet!");
-    }
-
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
         base.OnJoinRandomFailed(returnCode, message);
         Debug.Log(message);
         CanvasManager.instance.statusText.text = message;
-    }
-
-    public void SetDisplayName(string name)
-    {
-        PhotonNetwork.NickName = name;
     }
 
     public override void OnCreatedRoom()
@@ -345,8 +331,6 @@ public class LaunchManager : MonoBehaviourPunCallbacks
         Debug.Log("Left room successfully");
         //if (SceneManager.GetActiveScene().name != "LaunchScene") SceneManager.LoadScene("LaunchScene");
     }
-
-
 
     #endregion
 }
