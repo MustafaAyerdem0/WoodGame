@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class CharacterProfile : MonoBehaviour
 {
+    [Header("Character Profile Variables")]
     public int woodCount;
     public TMP_Text woodCountText;
     public UnityEngine.UI.Outline outline;

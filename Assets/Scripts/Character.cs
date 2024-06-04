@@ -9,36 +9,22 @@ using UnityEngine.UI;
 
 public class Character : MonoBehaviourPun
 {
-    //[HideInInspector]
-    public NavMeshObstacle targetTreeObstacle;
-    private Tree targetTree;
-    Outlinable outline;
 
-    [HideInInspector]
-    public NavMeshAgent agent;
-
-    [SerializeField]
-    private IState currentState;
-
-    public Animator animator;
+    [SerializeField] private Image miniMapImage;
+    [SerializeField] private LayerMask playersLayerMask;
+    [HideInInspector] private NavMeshObstacle targetTreeObstacle;
+    [HideInInspector] public Animator animator;
+    [HideInInspector] public CharacterProfile characterProfile;
+    [HideInInspector] public int CharacterNumber;
+    [HideInInspector] public bool isLumbering;
+    [HideInInspector] public bool selectedWhileWalking;
     private bool treeDestinationSet;
-    public bool isLumbering;
-
-    public LayerMask playersLayerMask;
-
-    Color teamColor;
-
-    Coroutine lumberingCoroutine;
-    public Image miniMapImage;
-
-    public int CharacterNumber;
-
-    public CharacterProfile characterProfile;
-
-    public bool isSelected;
-
-    public bool selectedWhileWalking;
-
+    private NavMeshAgent agent;
+    private IState currentState;
+    private Tree targetTree;
+    private Outlinable outline;
+    private Color teamColor;
+    private Coroutine lumberingCoroutine;
 
     private void Awake()
     {
@@ -48,9 +34,6 @@ public class Character : MonoBehaviourPun
         currentState = new IdleState();
         currentState.EnterState(this);
     }
-
-
-
     private void Start()
     {
         if (!PhotonNetwork.IsConnected) return;
@@ -116,7 +99,6 @@ public class Character : MonoBehaviourPun
     {
         return treeDestinationSet;
     }
-
 
     public void SelectCharacter()
     {
@@ -196,7 +178,6 @@ public class Character : MonoBehaviourPun
             }
         }
     }
-
 
     public IEnumerator LumberTree()
     {

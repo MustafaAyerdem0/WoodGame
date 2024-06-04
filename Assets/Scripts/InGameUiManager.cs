@@ -9,13 +9,13 @@ using UnityEngine.Video;
 public class InGameUiManager : MonoBehaviour
 {
     public static InGameUiManager instance;
+    [Header("Wood")]
+    [SerializeField] private TMP_Text woodCountText;
+    [SerializeField] private Animation countScaleAnimation;
 
-    public TMP_Text woodCountText;
-
-    public Animation countScaleAnimation;
-    public VideoPlayer videoPlayer;
-
-    public VideoClip greenCharacter, redCharacter;
+    [Header("CharacterProfileVideo")]
+    [SerializeField] private VideoPlayer videoPlayer;
+    [SerializeField] private VideoClip greenCharacter, redCharacter;
 
     private void Awake()
     {
@@ -31,7 +31,6 @@ public class InGameUiManager : MonoBehaviour
 
     private void Start()
     {
-        print("start calisti");
         woodCountText.text = PlayerProperty.instance?.collectedWoodCount.ToString();
     }
 

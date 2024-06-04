@@ -5,7 +5,7 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     [Header("Camera Control Settings")]
-    [Tooltip("There are values ​​for both mobile and pc.")]
+    [Tooltip("There are values for mobile")]
     [SerializeField] public float panSpeed = 20f;
     [SerializeField] public float panBorderThickness = 10f;
     [SerializeField] public Vector3 panLimit;
@@ -17,8 +17,6 @@ public class CameraController : MonoBehaviour
     private Vector3 touchStart;
     private float initialPinchDistance;
     private float initialCameraHeight;
-
-    [SerializeField]
     private bool isPanning = false; // To avoid giving direction to the character while moving the camera
 
 
@@ -29,9 +27,7 @@ public class CameraController : MonoBehaviour
 #endif
     }
 
-
-
-    private void FixedUpdate()
+    private void FixedUpdate()  // Due to the fps problem in Android, camera movement works more smoothly in fixedupdate
     {
 #if !UNITY_EDITOR 
         ControlCamera();
@@ -39,11 +35,11 @@ public class CameraController : MonoBehaviour
 #endif
     }
 
-    void ControlCamera() // Updated to FixedUpdate
+    void ControlCamera()
     {
         Vector3 pos = transform.position;
 
-        // Tek parmakla kamera hareketi
+        // One-finger camera movement
         if (Input.touchCount == 1)
         {
             Touch touch = Input.GetTouch(0);
@@ -64,10 +60,10 @@ public class CameraController : MonoBehaviour
                 Invoke(nameof(EndOfPaning), 0.15f);
             }
         }
-        // İki parmakla büyütme/küçültme hareketi
+        // Two-finger zoom gesture
         else if (Input.touchCount == 2)
         {
-            isPanning = true; // Kamera hareketi için işaretle
+            isPanning = true;
             Touch touchZero = Input.GetTouch(0);
             Touch touchOne = Input.GetTouch(1);
 
@@ -80,26 +76,17 @@ public class CameraController : MonoBehaviour
             {
                 float currentPinchDistance = Vector2.Distance(touchZero.position, touchOne.position);
                 float pinchDifference = initialPinchDistance - currentPinchDistance;
-
                 float targetHeight = initialCameraHeight + pinchDifference * scrollSpeed * Time.fixedDeltaTime;
                 targetHeight = Mathf.Clamp(targetHeight, minY, maxY);
-
-                // Yumuşatılmış kamera hareketi
                 pos.y = Mathf.Lerp(pos.y, targetHeight, smoothSpeed * Time.fixedDeltaTime);
             }
             else if (touchZero.phase == TouchPhase.Ended || touchOne.phase == TouchPhase.Ended)
             {
-                Invoke(nameof(EndOfPaning), 0.15f); // Hemen false olursa selectin scripti çalışabiliyor
+                Invoke(nameof(EndOfPaning), 0.15f); // Adding a small delay so the move function doesn't work immediately
             }
         }
-        // Fare tekerleği ile yakınlaştırma/uzaklaştırma
-        else if (Input.GetAxis("Mouse ScrollWheel") != 0)
-        {
-            float scroll = Input.GetAxis("Mouse ScrollWheel");
-            pos.y -= scroll * scrollSpeed * Time.fixedDeltaTime;
-            pos.y = Mathf.Clamp(pos.y, minY, maxY);
-        }
-        // Kameranın pozisyonunu sınırla
+
+        // Limit camera position
         pos.x = Mathf.Clamp(pos.x, -panLimit.x, panLimit.x);
         pos.z = Mathf.Clamp(pos.z, -panLimit.z, panLimit.z);
 
@@ -111,7 +98,7 @@ public class CameraController : MonoBehaviour
         isPanning = false;
     }
 
-    public bool IsPanning()
+    public bool IsPanning() //Check if not dragging
     {
         return isPanning;
     }

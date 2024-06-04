@@ -8,6 +8,7 @@ using System;
 public class CharacterSelectionController : MonoBehaviour
 {
     public static CharacterSelectionController instance;
+    private GameObject trackMarker;
 
     [Header("LayerMasks")]
     [SerializeField] private LayerMask selectableLayer;
@@ -20,9 +21,9 @@ public class CharacterSelectionController : MonoBehaviour
 
     [Header("ListOfCharacters")]
     public List<Character> selectedCharacters = new List<Character>();
-    public GameObject trackMarkerPrefab;
-    private GameObject trackMarker;
-    private float windowDpi;
+    [Header("Prefab")]
+    [SerializeField] private GameObject trackMarkerPrefab;
+
 
     private void Awake()
     {
@@ -39,37 +40,28 @@ public class CharacterSelectionController : MonoBehaviour
     }
 
 
-    void Start()
-    {
-        if (Screen.dpi < 1) windowDpi = 1;
-        if (Screen.dpi < 200) windowDpi = 1;
-        else windowDpi = Screen.dpi / 200f;
-    }
-
-
     void Update()
     {
-        HandleSelection(); // Eğer kamera hareketi yapılmıyorsa seçim ve hareket işlemlerini yap
+        HandleSelection();
     }
 
     void HandleSelection()
     {
         if (Input.GetMouseButtonUp(0))
         {
-            if (IsPointerOverUIObject())
+            if (IsPointerOverUIObject()) //Check if Pointer Over UI Object
             {
-                Debug.Log("PointerOverUIObject");
                 return;
             }
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, selectableLayer))
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, selectableLayer)) // Character selection
             {
                 Character selectedCharacter = hit.collider.GetComponent<Character>();
                 selectedCharacter.SelectCharacter();
             }
-            else if (Physics.Raycast(ray, out hit, Mathf.Infinity, treeLayer) && !cameraController.IsPanning())
+            else if (Physics.Raycast(ray, out hit, Mathf.Infinity, treeLayer) && !cameraController.IsPanning()) // Tree selection
             {
                 StartCoroutine(hit.transform.GetComponent<Tree>().FlashOutline());
                 foreach (Character character in selectedCharacters)
@@ -79,7 +71,7 @@ public class CharacterSelectionController : MonoBehaviour
                 ClearSelectedCharacters();
 
             }
-            else if (Physics.Raycast(ray, out hit, Mathf.Infinity, groundLayer) && !cameraController.IsPanning())
+            else if (Physics.Raycast(ray, out hit, Mathf.Infinity, groundLayer) && !cameraController.IsPanning()) // Select destination
             {
                 InstantiateTrackMarker(hit);
                 foreach (Character character in selectedCharacters)
@@ -91,14 +83,14 @@ public class CharacterSelectionController : MonoBehaviour
         }
     }
 
-    public void InstantiateTrackMarker(RaycastHit hit)
+    public void InstantiateTrackMarker(RaycastHit hit) // Create Track Marker
     {
         trackMarker = Instantiate(trackMarkerPrefab);
         trackMarker.transform.position = hit.point + hit.normal * 0.01f;
         Destroy(trackMarker, 1.5f);
     }
 
-    private bool IsPointerOverUIObject()
+    private bool IsPointerOverUIObject() //Check if Pointer Over UI Object
     {
         PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
         eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
@@ -116,21 +108,7 @@ public class CharacterSelectionController : MonoBehaviour
 
         return false;
     }
-
-
-    public void PrintAgent()
-    {
-        foreach (Character character in selectedCharacters)
-        {
-            print("stoppingDistance: " + character.agent.stoppingDistance);
-            print("remainingDistance: " + character.agent.remainingDistance);
-            print("agent.hasPath: " + character.agent.hasPath);
-        }
-    }
-
-
-
-    void ClearSelectedCharacters()
+    void ClearSelectedCharacters() // Clear all characters from the list except those selected when they already have a destination
     {
         List<Character> charactersToRemove = new List<Character>();
 

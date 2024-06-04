@@ -1138,10 +1138,10 @@ GameObject:
   - component: {fileID: 2789568000900821589}
   - component: {fileID: 8094839373830334511}
   - component: {fileID: 2394842067991431118}
+  - component: {fileID: 8131312909472722127}
   - component: {fileID: 2394842067991431121}
   - component: {fileID: 2394842067991431123}
   - component: {fileID: 2394842067991431120}
-  - component: {fileID: 8131312909472722127}
   - component: {fileID: 4330387336275660733}
   - component: {fileID: 4336185990433762390}
   m_Layer: 6
@@ -1213,6 +1213,27 @@ CapsuleCollider:
   m_Height: 2.97
   m_Direction: 1
   m_Center: {x: 0, y: 1.12, z: 0}
+--- !u!114 &8131312909472722127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3313903846942386415}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81f168c38c11e0747b9dc29919949f5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  miniMapImage: {fileID: 2114734284422305801}
+  playersLayerMask:
+    serializedVersion: 2
+    m_Bits: 256
+  animator: {fileID: 0}
+  characterProfile: {fileID: 0}
+  CharacterNumber: 0
+  isLumbering: 0
+  selectedWhileWalking: 0
 --- !u!195 &2394842067991431121
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1275,30 +1296,6 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
---- !u!114 &8131312909472722127
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3313903846942386415}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 81f168c38c11e0747b9dc29919949f5f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetTreeObstacle: {fileID: 0}
-  agent: {fileID: 0}
-  animator: {fileID: 0}
-  isLumbering: 0
-  playersLayerMask:
-    serializedVersion: 2
-    m_Bits: 256
-  miniMapImage: {fileID: 2114734284422305801}
-  CharacterNumber: 0
-  characterProfile: {fileID: 0}
-  isSelected: 0
-  selectedWhileWalking: 0
 --- !u!114 &4330387336275660733
 MonoBehaviour:
   m_ObjectHideFlags: 0

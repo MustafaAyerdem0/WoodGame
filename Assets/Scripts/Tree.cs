@@ -3,23 +3,26 @@ using System.Collections.Generic;
 using EPOOutline;
 using Photon.Pun;
 using TMPro;
+using UnityEditor.EditorTools;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class Tree : MonoBehaviourPun
 {
-    public int hP = 100;
-    public Rigidbody rb;
-    public NavMeshObstacle navMeshObstacle;
+    [Header("Tree's Property")]
+    [SerializeField] public int hP = 100;
+    [SerializeField] public Rigidbody rb;
+    [SerializeField] public NavMeshObstacle navMeshObstacle;
+    [SerializeField] public BoxCollider boxColl;
+    private Outlinable outline;
+    [SerializeField] public Canvas woodCountCanvas;
 
-    public BoxCollider boxColl;
+    [Header("FromDirectory")]
 
-    Outlinable outline;
-
-    public Canvas woodCountCanvas;
-    public TMP_Text woodCountText;
-
-    public Material transparentMaterial;
+    [Tooltip("Wood Prefab")]
+    [SerializeField] private TMP_Text woodCountText;
+    [Tooltip("Transparent Material")]
+    [SerializeField] public Material transparentMaterial;
 
     private void Awake()
     {
@@ -50,7 +53,6 @@ public class Tree : MonoBehaviourPun
     public void SpawnWoodText(Color teamColor)
     {
         TMP_Text woodCount = Instantiate(woodCountText, woodCountCanvas.transform);
-        print("spawnlandı");
         woodCount.color = teamColor;
         if (woodCount.gameObject != null) Destroy(woodCount.gameObject, 1f);
     }
