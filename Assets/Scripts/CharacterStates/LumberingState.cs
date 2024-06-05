@@ -9,13 +9,6 @@ public class LumberingState : IState
         character.animator.SetBool("Lumbering", true);
         character.isLumbering = true;
         character.StartLumbering();
-        Debug.Log("Lumbering");
-
-    }
-
-    public void UpdateState(Character character)
-    {
-
     }
 
     public void ExitState(Character character)

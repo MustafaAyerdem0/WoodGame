@@ -7,12 +7,6 @@ public class WalkingState : IState
     public void EnterState(Character character)
     {
         character.animator.SetBool("Walking", true);
-        Debug.Log("Walking");
-    }
-
-    public void UpdateState(Character character)
-    {
-
     }
 
     public void ExitState(Character character)

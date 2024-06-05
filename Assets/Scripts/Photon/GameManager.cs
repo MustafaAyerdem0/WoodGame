@@ -8,15 +8,10 @@ using Unity.Burst.Intrinsics;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
-    [SerializeField]
-    GameObject playerPrefab;
-
-    public static GameManager instance;    //singleton design pattern
-
-    public List<Color> colors = new List<Color>();
-
-    public List<Character> characters = new List<Character>();
-    public List<CharacterProfile> characterProfiles = new List<CharacterProfile>();
+    public static GameManager instance;
+    [SerializeField] private GameObject playerPrefab;
+    [SerializeField] public List<Color> colors = new List<Color>();
+    [SerializeField] private List<CharacterProfile> characterProfiles = new List<CharacterProfile>();
 
     private void Awake()
     {
@@ -30,8 +25,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
-
-    // Start is called before the first frame update
     void Start()
     {
         if (PhotonNetwork.IsConnected)
@@ -56,24 +49,9 @@ public class GameManager : MonoBehaviourPunCallbacks
             character.CharacterNumber = i;
             characterProfiles[i].character = character;
             character.characterProfile = characterProfiles[i];
-            characters.Add(character);
         }
 
     }
-
-
-
-    public override void OnJoinedRoom()
-    {
-        Debug.Log(PhotonNetwork.NickName + " joined to --" + PhotonNetwork.CurrentRoom.Name);
-    }
-
-    public override void OnPlayerEnteredRoom(Player newPlayer)
-    {
-        Debug.Log(newPlayer.NickName + " joined to --" + PhotonNetwork.CurrentRoom.Name + " " + PhotonNetwork.CurrentRoom.PlayerCount);
-    }
-
-
 
     public override void OnLeftRoom()
     {

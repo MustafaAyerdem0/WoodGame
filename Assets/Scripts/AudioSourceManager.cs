@@ -5,10 +5,10 @@ using UnityEngine;
 public class AudioSourceManager : MonoBehaviour
 {
     public static AudioSourceManager instance;
-    public AudioSource audioSourceEffect;
-    public AudioSource audioSourceBG;
-    public AudioClip[] soundEffectsMan;
-    public AudioClip[] soundEffectsWoman;
+    [SerializeField] private AudioSource audioSourceEffect;
+    [SerializeField] private AudioSource audioSourceBG;
+    [SerializeField] private AudioClip[] soundEffectsMan;
+    [SerializeField] private AudioClip[] soundEffectsWoman;
 
     private void Awake()
     {

@@ -14,8 +14,10 @@ public class Tree : MonoBehaviourPun
     [SerializeField] public Rigidbody rb;
     [SerializeField] public NavMeshObstacle navMeshObstacle;
     [SerializeField] public BoxCollider boxColl;
-    private Outlinable outline;
     [SerializeField] public Canvas woodCountCanvas;
+    [SerializeField] private Color transparentColor;
+    private Outlinable outline;
+    private MeshRenderer meshRenderer;
 
     [Header("FromDirectory")]
 
@@ -30,6 +32,7 @@ public class Tree : MonoBehaviourPun
         boxColl = GetComponent<BoxCollider>();
         outline = GetComponent<Outlinable>();
         navMeshObstacle = GetComponent<NavMeshObstacle>();
+        meshRenderer = GetComponent<MeshRenderer>();
     }
 
     public IEnumerator FlashOutline()
@@ -41,6 +44,12 @@ public class Tree : MonoBehaviourPun
 
     public void DropTree()
     {
+        boxColl.isTrigger = false;
+        rb.isKinematic = false;
+        navMeshObstacle.enabled = false;
+        meshRenderer.material = transparentMaterial;
+        meshRenderer.material.color = transparentColor;
+
         if (photonView.IsMine)
         {
             Vector3 directionToCenter = (Vector3.zero - rb.position).normalized; // to apply force towards the center point
@@ -61,5 +70,6 @@ public class Tree : MonoBehaviourPun
     {
         if (gameObject != null) PhotonNetwork.Destroy(gameObject);
     }
+
 
 }

@@ -24,7 +24,7 @@ public class PlayerProperty : DBSyncSynchronizer
         }
     }
 
-    public override void AddDBKeys()
+    public override void AddDBKeys() // Adding json key to the database with its own Script name to the action of classes with DBSyncSynchronizer superclass
     {
         base.AddDBKeys();
         PlayfabManager.instance.dbKeys[GetType().Name] = this;

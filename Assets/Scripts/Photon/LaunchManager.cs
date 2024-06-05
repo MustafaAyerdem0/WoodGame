@@ -329,7 +329,6 @@ public class LaunchManager : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
     {
         Debug.Log("Left room successfully");
-        //if (SceneManager.GetActiveScene().name != "LaunchScene") SceneManager.LoadScene("LaunchScene");
     }
 
     #endregion

@@ -1226,9 +1226,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   miniMapImage: {fileID: 2114734284422305801}
-  playersLayerMask:
-    serializedVersion: 2
-    m_Bits: 256
   animator: {fileID: 0}
   characterProfile: {fileID: 0}
   CharacterNumber: 0

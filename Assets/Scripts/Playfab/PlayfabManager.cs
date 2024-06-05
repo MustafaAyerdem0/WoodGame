@@ -97,7 +97,7 @@ public class PlayfabManager : MonoBehaviour
         CanvasManager.instance.statusText.text = "Failure: " + error.GenerateErrorReport();
     }
 
-    public void SaveData(string key)
+    public void SaveData(string key) //Converting the class to Json and saving only variables with the "SyncWithDatabase Attribute" Attribute to the database
     {
         var data = new Dictionary<string, string>();
         var fields = dbKeys[key].GetType().GetFields(BindingFlags.Public | BindingFlags.Instance);
@@ -134,7 +134,7 @@ public class PlayfabManager : MonoBehaviour
         PlayFabClientAPI.GetUserData(new GetUserDataRequest(), OnDataRecieved, OnError);
     }
 
-    void OnDataRecieved(GetUserDataResult result)
+    void OnDataRecieved(GetUserDataResult result) //Converting Json to a class and applying only variables with the "SyncWithDatabaseAttribute" attribute to the class
     {
         if (result != null)
         {

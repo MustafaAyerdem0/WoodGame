@@ -9,9 +9,7 @@ using UnityEngine.UI;
 
 public class Character : MonoBehaviourPun
 {
-
     [SerializeField] private Image miniMapImage;
-    [SerializeField] private LayerMask playersLayerMask;
     [HideInInspector] private NavMeshObstacle targetTreeObstacle;
     [HideInInspector] public Animator animator;
     [HideInInspector] public CharacterProfile characterProfile;
@@ -46,7 +44,6 @@ public class Character : MonoBehaviourPun
 
     private void Update()
     {
-        currentState.UpdateState(this);
         CheckArrival();
     }
 
@@ -216,18 +213,8 @@ public class Character : MonoBehaviourPun
 
             if (targetTree.hP <= 0)
             {
-                targetTree.boxColl.isTrigger = false;
-                targetTree.boxColl.excludeLayers = playersLayerMask;
-                targetTree.rb.isKinematic = false;
-                targetTree.navMeshObstacle.enabled = false;
-                targetTree.GetComponent<MeshRenderer>().material = targetTree.transparentMaterial;
-                Color color = Color.white;
-                color.a = 0.51f;
-                targetTree.GetComponent<Renderer>().material.color = color;
                 targetTree.DropTree();
-
                 ChangeState(new IdleState());
-
             }
         }
         else if (targetTree.hP <= 0)
