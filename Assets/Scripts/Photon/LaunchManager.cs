@@ -93,7 +93,6 @@ public class LaunchManager : MonoBehaviourPunCallbacks
         currentTicketId = result.TicketId;
         Debug.Log("Matchmaking ticket created with ID: " + result.TicketId);
         CanvasManager.instance.statusText.text = "Matchmaking ticket created" + "\nLooking for an online player to matchmaking";
-        print(timeoutCoroutine);
         timeoutCoroutine = StartCoroutine(MatchmakingTimeoutCoroutine(22));
         matchmakingCoroutine = StartCoroutine(PollMatchmakingTicket(currentTicketId));
     }

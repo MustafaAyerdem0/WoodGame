@@ -1,21 +1,19 @@
 using System.Collections;
-using System.Collections.Generic;
 using EPOOutline;
 using Photon.Pun;
 using TMPro;
-using UnityEditor.EditorTools;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class Tree : MonoBehaviourPun
 {
     [Header("Tree's Property")]
-    [SerializeField] public int hP = 100;
-    [SerializeField] public Rigidbody rb;
-    [SerializeField] public NavMeshObstacle navMeshObstacle;
-    [SerializeField] public BoxCollider boxColl;
-    [SerializeField] public Canvas woodCountCanvas;
+    [HideInInspector] public int hP = 100;
+    [HideInInspector] public NavMeshObstacle navMeshObstacle;
+    [SerializeField] private Canvas woodCountCanvas;
     [SerializeField] private Color transparentColor;
+    private Rigidbody rb;
+    private BoxCollider boxColl;
     private Outlinable outline;
     private MeshRenderer meshRenderer;
 
